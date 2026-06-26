@@ -147,3 +147,51 @@
 Симптом: «Нарушение прав доступа» при `Записать` профиля в `НачатьВыгрузкуGetData` под WS-пользователем.
 Исправление: `ЗаписатьСтатусПрофиляИсточника` — privileged + `ОбменДанными.Загрузка`.
 Связанный отчёт: reports/verification-2026-06-25-14.md
+
+### Slice S2 — принят (2026-06-26)
+Срез: S2 — Полный цикл обмена
+Решение: принят (manual shortcut)
+Обоснование: заказчик подтвердил приёмку при возобновлении `/opsx:apply`.
+Изменения tasks: S2.accept [x]
+Связанный отчёт: reports/slice-acceptance-S2-2026-06-26.md
+
+### Code-Truth — S3.1–S3.4, S3.6 — 2026-06-26
+- task: S3.1–S3.4, S3.6
+- symbols: verified in as-built S2 code (НачатьВыгрузкуGetData, ПолучитьДанныеОбмена, НайтиЕдинственныйПрофильИсточникаПоПрефиксам, ПодтвердитьПолучениеДанных, ВыполнитьСеансОбменаПоПрофилюПриемника)
+- verification: grep/read OK
+- source: orchestrator spot-check
+
+### Code-Truth — S3.5 — 2026-06-26
+- task: S3.5
+- symbols:
+  - ПрефиксПрофиляДляТекстаЖурнала @ Module.bsl:499-529, annotation=none, action=created
+  - ЗаписатьСобытиеОбмена @ Module.bsl:533-571, annotation=none, action=modified
+- verification: grep/read OK
+- source: writer.created_or_modified_symbols
+
+### Slice S3 — передача на приёмку (2026-06-26)
+Срез: S3 — Ошибки и журнал регистрации
+Решение: awaiting-acceptance
+Обоснование: все рабочие задачи S3 [x]; S3.1–S3.4/S3.6 подтверждены в коде S2; S3.5 — префикс в журнале.
+Изменения tasks: S3.1–S3.6 [x]
+Связанный отчёт: reports/handoff-acceptance-S3-2026-06-26.md
+
+### Verify repair — UX WS errors (2026-06-26)
+**Источник:** `/opsx:verify` + симптом пользователя (стек вместо бизнес-текста на форме).
+**Disposition:** repaired — S3.7, design § UX, spec scenario, Primary S3.
+**Связанный отчёт:** reports/verification-2026-06-26.md
+
+### Code-Truth — S3.7 — 2026-06-26
+- task: S3.7
+- symbols:
+  - ТекстОшибкиВебСервисаДляПользователя @ Module.bsl:597-647, annotation=none, action=created
+  - ВыполнитьСеансОбменаПоПрофилюПриемника @ Module.bsl:383-401, annotation=none, action=modified
+- verification: grep/read OK
+- source: writer.created_or_modified_symbols
+
+### Slice S3 — передача на приёмку (2026-06-26, S3.7)
+Срез: S3 — Ошибки и журнал регистрации
+Решение: awaiting-acceptance
+Обоснование: все рабочие задачи S3 [x] включая S3.7 UX WS; приёмка передана на ручной Primary.
+Изменения tasks: S3.7 [x]
+Связанный отчёт: reports/handoff-acceptance-S3-2026-06-26-2.md
