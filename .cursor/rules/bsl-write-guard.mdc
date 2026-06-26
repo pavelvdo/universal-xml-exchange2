@@ -1,0 +1,41 @@
+---
+description: "BSL Write Guard: правка .bsl — только через onec-code-writer + обязательный onec-code-reviewer"
+alwaysApply: true
+---
+
+# BSL Write Guard
+
+## АБСОЛЮТНЫЙ ЗАПРЕТ
+
+Оркестратор НЕ использует Write, StrReplace для .bsl файлов.
+Если начал — СТОП, отмени, делегируй.
+
+## ПРАВИЛО
+
+Любая нетривиальная правка .bsl модуля — только через onec-code-writer
+(Task, subagent_type: onec-code-writer).
+
+После writer — обязательная проверка onec-code-reviewer
+(Task, subagent_type: onec-code-reviewer). Задача НЕ завершена до ревью.
+
+## МИНИМАЛЬНЫЙ ПОТОК
+
+writer → ReadLints → reviewer
+
+## ИСКЛЮЧЕНИЯ (writer не нужен)
+
+См. секции LIGHT MODE, MECHANICAL MODE и ИСКЛЮЧЕНИЯ в `1c-agent-delegation.mdc`.
+
+**JSDoc / шапка метода:** исключение «только комментарии» **не** распространяется на добавление или изменение **многострочной** шапки процедуры/функции перед `Процедура`/`Функция` (описание назначения, блоки «Параметры:», «Возвращаемое значение:», контракты). Такие правки считаются **нетривиальными** → только **onec-code-writer**.
+
+**Контекст apply/review:** Исключения (однострочная правка, только комментарии) НЕ действуют в командных сессиях /opsx:apply и /review. В этих контекстах ВСЕ правки .bsl → writer. Post-reviewer fixes, spot-check corrections, пропущенные строки — всегда через writer. Rationale: в apply-сессии оркестратор склонен трактовать содержательные правки как «мелкие», обходя делегирование.
+
+Даже в исключениях reviewer обязателен (кроме явного отказа пользователя).
+
+## СВЯЗЬ
+
+Детальная диспетчеризация (Light Mode, APPLY GATE, LINT GATE, API CHECK,
+EXTENSION GATE): `1c-agent-delegation.mdc`.
+
+---
+

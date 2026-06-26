@@ -1,0 +1,36 @@
+---
+description: "Сессия команд /opsx:*, чтение SKILL.md, context-strategy — единый протокол на каждом ходе"
+alwaysApply: true
+priority: 180
+---
+
+# Session Discipline
+
+Объединяет три аспекта дисциплины сессии: Command → Skill (вход), Persistence (каждый ход), Context Strategy (массовое чтение).
+
+## Command → Skill (вход)
+
+Команда из `.cursor/commands/*.md` инструктирует Read `SKILL.md` → **первый tool call** только `Read` скилла; не читать файлы пользователя до Entry Protocol.
+
+## Persistence (каждый ход)
+
+- Протокол команды действует **на каждом** сообщении сессии, не только на первом.
+- Follow-up — продолжение той же команды; свободный режим внутри `/opsx:*` недоступен.
+- Выход: другая команда или явное завершение пользователем.
+- `/opsx:explore` Ultra-Lite: без `openspec/sessions/`; якорь **Вопрос** / `user-goal` в чате (промпты агентов).
+
+## Context Strategy
+
+**TRIGGER:** 3+ файлов, XML/CSV/JSON, код 500+ строк с вопросом, «береги контекст».
+
+**ACTION:** Read `.cursor/skills/context-strategy/SKILL.md` до массового чтения.
+
+**BYPASS:** 1–2 файла <150 строк; точечный вопрос; файл уже в контексте.
+
+## Anti-patterns
+
+| Команда | Неверно | Верно |
+|---------|---------|-------|
+| explore | «обследуй» → Grep .bsl сам | бриф → Task explorer |
+| explore | «создай ЗНИ» | блок `## Постановка ЗНИ` → `/opsx:new` |
+| apply | «а может лучше?» | предложить explore |

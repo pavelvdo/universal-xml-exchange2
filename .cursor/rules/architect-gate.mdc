@@ -1,0 +1,191 @@
+---
+description: "Architect Gate + Design Review — триггеры архитектурного ревью и ревью постановки, проверять в explore/verify/apply"
+alwaysApply: false
+priority: 200
+---
+
+# Architect Gate — единые триггеры
+
+Единый источник истины для определения необходимости архитектурного ревью (onec-code-architect). Ссылаются: explore, verify, apply, 1c-agent-delegation, verified-cause-gate, precedent-regression-gate.
+
+## ТРИГГЕРЫ
+
+Любой сработавший триггер из любой группы → Gate срабатывает.
+
+### Объективные (механически, Glob/Grep)
+
+- В сессии вызывался trace-analyst (Glob `reports/trace-analysis-*.md` в change dir или `temp/reports/`)
+- В сессии вызывался explorer (`reports/exploration-*.md`)
+- Bug fix — маркеры см. `1c-agent-delegation.mdc`
+- Перехват/компенсация базовой платформенной процедуры (Grep design.md)
+- Новый объект метаданных в design (Grep design.md)
+- В `debug.md` change: **M ≥ 3** строк с `Architect Gate:\s*(не вызывался|не требовался|declined|—)` (см. `.cursor/skills/openspec-extend-change/SKILL.md`, п. 5a, Триггер 2) **и** (нет `reports/architecture-extend-coherence-*.md` **или** дата последней секции `## Extend — YYYY-MM-DD` в `debug.md` новее даты в имени новейшего `architecture-extend-coherence-*.md`)
+
+Детальные списки grep-фраз (объективные и семантические маркеры для design.md / tasks.md) — в `.cursor/skills/openspec-verify-change/SKILL.md`, Layer 4 (Independent Challenge) и Layer 2 (структурные проверки design).
+
+### Семантические
+
+- Подмена типового метода: `&Вместо`, `&После`, `&Перед`
+- Несколько возможных точек реализации (альтернативы без выбора)
+- Новые связи между модулями расширения
+- Экспортная функция с ≥3 вызывающими
+- Отклонение от паттерна проекта
+- Локальная реализация поведения, владельцем которого является база, БСП, платформа или общий модуль: off-ветка feature-flag вызывает локальную копию вместо делегирования, design планирует «эквивалент типового метода» внутри расширения вместо `ПродолжитьВызов(...)` или штатного API
+- Интеграция без секции `## Existing Mechanisms` в design.md (см. `existing-mechanism-priority.mdc`)
+- Интеграция без `## Design Rationale` в design.md
+- Design Rationale без ссылки на `architecture-*.md` или подтверждения пользователя
+- Фикс меняет пользовательский сценарий (UX-значимый)
+- Internal block extend (`debug.md`) фиксирует `Drift-check: drift-warning` или `scope-violation` при user-extend (триггер брифа **B2**, см. `openspec-extend-change/SKILL.md`); `Drift-check` **не в чат**
+- **Precedent regression** (см. `.cursor/rules/precedent-regression-gate.mdc`): дельта `specs/**` содержит `MODIFIED`/`REMOVED` для capability, у которой в архиве есть `ADDED`; или в `design.md`/`proposal.md` есть явная отмена целей архивного change / пунктов `Protects-invariants` Load-Bearing ADR; или новый ADR **Supersedes** ADR со статусом Load-Bearing без секции `## Blast Radius` в новом ADR
+- Дельта spec или design противоречит KB с `invariant: true`, заявленному в Discovery по `anchor-paths`
+
+### Структурные
+
+- >1 файла затрагивается
+- >10 строк изменений
+- Изменяется контракт / API / экспортная сигнатура
+
+## ADR DISCOVERY (при срабатывании Gate)
+
+Перед вызовом архитектора — проверить существующие ADR:
+
+1. Glob `openspec/adrs/ADR-*.md`
+2. Grep по области задачи (домен, подсистема, ключевые модули)
+3. Если релевантные ADR найдены — включить в промпт архитектора как контекст:
+   `Существующие ADR по области: ADR-NNNN (заголовок) — [краткое резюме решения]`
+4. Если архитектор рекомендует подход, **противоречащий** существующему ADR — пометить как Supersedes и предложить обновить статус ADR
+
+Формат ADR: `.cursor/rules/adr-format.mdc`.
+
+## KNOWLEDGE DISCOVERY (при срабатывании Gate)
+
+Перед вызовом архитектора — поднять релевантные KB-факты:
+
+0. Если нет openspec/knowledge/_taxonomy.yaml — не блокировать Gate; одна строка
+   warning в преамбуле контекста («taxonomy отсутствует, KB Discovery пропущен»).
+
+1. Read openspec/knowledge/_index.yaml
+2. Primary-фильтр: `anchor-paths` точно совпадает с файлами задачи. Это главный детерминированный сигнал.
+3. Fallback-фильтр: только если primary пусто — `domain` ∈ {scope domains, выведенные из путей через `_taxonomy.yaml`}; внутри domain ранжировать по совпадению токенов из файлов/запроса с `title` и `anchor-paths`, затем по `used-count`.
+4. Top-10 по релевантности
+5. В промпт архитектора:
+   - `active` факты → как верифицированные утверждения о системе
+   - `stale` факты → с пометкой "⚠ TTL истёк DD дней назад / drift detected, проверить"
+   - `deprecated`/`superseded` → не передаются
+5b. Передача в промпт архитектора — через блок `## Existing Knowledge` по правилам `KB CONTEXT` из `.cursor/rules/1c-agent-delegation.mdc`. Если Discovery пустой — в промпте фиксируется «Discovery выполнен, совпадений нет».
+6. Если архитектор в своём report противоречит `active` факту — добавить
+   в architecture-report секцию "## Knowledge conflicts" с указанием KB-ID
+
+Формат: .cursor/rules/knowledge-format.mdc
+
+## PRECEDENT DISCOVERY (при срабатывании Gate или перед new/verify по триггерам precedent-regression-gate)
+
+Дополнительно к ADR Discovery и KB Discovery — контекст **архивных** changes той же capability и пересекающихся файлов:
+
+1. Из текущего change извлечь множество `<capability>` из путей `openspec/changes/<name>/specs/*/spec.md` (если есть).
+2. Для каждого capability: `Glob openspec/changes/archive/**/specs/<capability>/spec.md`. Если файлов >10 — остановиться на 10 по новизме даты в пути archive (правило бюджета verify Layer 2.4).
+3. Для каждого найденного архивного change прочитать только `proposal.md` (секции `## Why`, `## What Changes`), первые абзацы `design.md` (`## Goals / Non-Goals`, `## Behavior Contract`, `## Decisions`).
+4. Пересечение по файлам: `Grep` по `openspec/changes/archive/**/proposal.md` на пути из `tasks.md` / `design.md` текущего change (`src/...`) — до **3** наиболее релевантных архивных каталогов (совпадение capability + пересечение путей).
+5. Сформировать блок промпта **`## Cross-Archive Context`** (не более 3 changes): для каждого — имя каталога archive, цитата цели из `## Goals`, ссылка на capability.
+
+Если шаг 1 не применим (нет specs в change) — выполнить только шаг 4 по путям из tasks/design.
+
+## МОДЕЛЬ И КАЧЕСТВО ОТЧЁТА АРХИТЕКТОРА
+
+- Один агент **`onec-code-architect`**. Во frontmatter у всех кастомных агентов **`model: inherit`**; рабочая модель задаётся параметром **`Task(..., model=<slug>)`** по таблице в `.cursor/rules/model-selection.mdc`.
+- **Цепочка вызовов:** Primary (`claude-opus-4-8-thinking-high` или следующий шаг при `Invalid model selection`) → `model="gemini-3.1-pro"` → вызов **без** `model=` (модель чата). Детали и ограничение enum — в `model-selection.mdc`.
+- При обязательном вызове архитектора оркестратор **обязан** завершить **полную** цепочку `Task` для этой роли (включая финальный вызов без `model=`, см. **«Целостность цепочки Task»** в `model-selection.mdc`) прежде, чем закрывать Gate самодельным отчётом или продолжать extend/verify без сохранённого файла отчёта архитектора, ожидаемого протоколом.
+- При ограничениях плана, админ-блоке или отсутствии Max Mode **Cursor** может подставить совместимую модель — это штатное поведение платформы, не «ошибка» Gate.
+- Если отчёт архитектора явно помечен **`confidence: low`** или оркестратор видит деградацию качества из-за модели — **одной строкой** в чате предупредить пользователя и предложить повторить отчёт после смены модели чата или восстановления квоты; Gate при этом **не** считается автоматически «не пройденным» только из-за слабой модели, если файл `architecture-*.md` с релевантным scope существует и Simplicity Check заполнен.
+
+## ДЕЙСТВИЕ ПРИ СРАБАТЫВАНИИ
+
+Зависит от контекста вызова (определяется в каждом скилле):
+
+Матрица «этап → тип гейта»: **blocking** — без архитектора дальше нельзя; **readiness** — оценка без блокировки этапа; **audit** — проверка соответствия; этап **не повторяет** гейты соседних этапов.
+
+| Контекст | Тип | Действие |
+|----------|-----|----------|
+| **explore** (Structured Investigation, шаг Decide) | blocking | Архитектор **обязателен**. AskQuestion пользователю: «Сработали триггеры [...]. Запустить архитектора?» без равноправной опции пропуска. Отказ только через явный пользовательский ввод с причиной; фиксируется в блоке «Постановка ЗНИ» как `declined: <reason>`. Если архитектор не запущен и отказ не зафиксирован — статус `required`, `/opsx:new` не рекомендовать |
+| **new** (Design Gate) | blocking | Без опции пропуска. Escape только через флаг `--skip-architect <причина>`, оставляющий явный аудит-след `.gate-override.yaml`. |
+| **verify** Layer 4 (Independent Challenge) | audit | Архитектор в режиме `design-challenge` — **независимый адверсариальный аудит** `proposal.md` ↔ `design.md`. Триггер: первый pre-apply прогон verify по ЗНИ или mtime `design.md` > `snapshot.last_challenge_at`. Отчёт `reports/design-challenge-YYYY-MM-DD.md`. Это **не дублирует** Architect Gate из new/explore: new даёт согласие на подход (auctorial), challenge даёт независимое подтверждение (adversarial). См. `.cursor/skills/openspec-verify-change/SKILL.md` Layer 4. |
+| **verify** Layer 5 (Implementation Readiness) | readiness | Архитектор в режиме `task-readiness` — оценка реализуемости задач. CRITICAL в отчёте verify при GAP. Не пересматривает архитектурный подход (это сделал Layer 4). |
+| **apply** (pre-flight) | readiness | Soft redirect на `/opsx:verify`. Если в change dir не найден ни один из `reports/verification-*.md` — предупреждение. **Не дублирует** проверку триггеров new/verify |
+| **1c-agent-delegation** (правка .bsl вне OpenSpec) | blocking | При срабатывании → onec-code-architect до реализации |
+| **extend** (Scope Coherence Audit) | audit | При срабатывании scope-drift триггеров (см. `openspec-extend-change/SKILL.md` п. 5a) → onec-code-architect в режиме `scope-coherence-audit`; отчёт `reports/architecture-extend-coherence-*.md` |
+
+## SIMPLICITY CHECK (обязательный выход архитектора)
+
+Каждый отчёт `onec-code-architect` в режимах `design`, `plan-review`, `task-readiness`, `fix-quality`, `slice-decomposition`, `task-decomposition` обязан содержать секцию ниже. Режимы **`scope-coherence-audit`**, **`precedent-coherence-audit`**, **`invariant-extraction`**, **`design-challenge`** Simplicity Check **не требуют** — это аудиты соответствия / адверсариальный challenge, а не выбор технического решения в одном change.
+
+```markdown
+## Simplicity Check
+
+- **Viable alternatives:** <2+ варианта или «единственный viable, потому что ...»>
+- **Selected simplest viable design:** <выбранный вариант>
+- **Why not simpler:** <почему ещё более простой путь не подходит>
+- **Complexity budget:** <количество точек перехвата / файлов / новых процедур / условных ветвлений>
+```
+
+Критерий: выбранный подход должен быть самым простым исполнимым вариантом, который сохраняет ADR, существующие механизмы и проверяемый `Behavior Contract`. Если отчёт предлагает рецепт реализации без сравнения альтернатив — Architect Gate считается пройденным по факту вызова, но `/opsx:verify` должен дать WARNING `architect-simplicity-missing`.
+
+## ИСКЛЮЧЕНИЯ (Gate НЕ срабатывает)
+
+- Light Mode (см. 1c-agent-delegation.mdc) без семантических триггеров и без изменения UX-сценария
+- Mechanical Mode (find-replace, #Область, удаление комментариев)
+- Пользователь явно отклонил архитектора через легальный путь (флаг `--skip-architect` в new)
+- Архитектор уже вызывался по этой теме (файл `architecture-*.md` существует в reports/) — **не распространяется** на триггеры **scope-drift** из `/opsx:extend`; для них закрытие только по `architecture-extend-coherence-*.md` (см. ЗАКРЫТИЕ GATE п. 5)
+- Рефакторинг без изменения поведения
+- Опечатки, переименования, комментарии
+
+## ЗАКРЫТИЕ GATE
+
+Gate считается пройденным, если выполняется **любое** из:
+1. Файл `architecture-*.md` существует в `reports/` change или `temp/reports/`, и его `scope.files` или `scope.modules` в YAML front-matter пересекаются с текущей задачей. (Одиночный старый отчёт без пересечения scope — Gate НЕ закрыт).
+2. Отчёт зарегистрирован в `reports/_manifest.yaml` со статусом `active` и подходящим `scope`.
+3. Пользователь явно отклонил архитектора через флаг `--skip-architect` (задокументировано в `.gate-override.yaml`) или через `Architect Gate: declined: <reason>` в поле «Architect / verify» блока «Постановка ЗНИ». При последующем `/opsx:new` причина из блока должна быть подтверждена флагом `--skip-architect <причина>` и перенесена в `.gate-override.yaml`; без этого Design Gate снова срабатывает.
+4. Триггеры не сработали (ни один из трёх групп).
+5. Для **scope-drift** триггеров (объективный счётчик Extend без архитектора и семантический `Drift-check` из брифа `/opsx:extend`): Gate закрывается **только** файлом `reports/architecture-extend-coherence-*.md`, созданным **после** события, поднявшего триггер. Обычные `architecture-*.md` и `architecture-extend-*.md` (без суффикса coherence) **не закрывают** отдельно зафиксированную scope-drift проблему.
+
+**Design Rationale ≠ закрытие Gate.** Самописный Rationale агента без внешней валидации не закрывает Gate. Закрывает только файл architecture-*.md с релевантным scope или осознанное решение пользователя.
+
+6. Для **precedent-regression** триггеров (`.cursor/rules/precedent-regression-gate.mdc`): помимо п.1–5, Gate считается закрытым по архитектурной части только если выполняется **любое**: (a) в `design.md` есть заполненная секция `## Blast Radius`; (b) существует `reports/architecture-precedent-coherence-*.md` с вердиктом «extends / без отмены архивного контракта» для всех затронутых прецедентов; (c) триггеры precedent не сработали. Обычный `architecture-*.md` без явного разбора Cross-Archive Context **не закрывает** precedent-regression.
+
+## INDEPENDENT CHALLENGE (verify Layer 4 vs new Architect Gate)
+
+Architect Gate из new/explore (`design`-режим) и Independent Challenge из verify (`design-challenge`-режим) — **разные роли**, не дублирующие друг друга.
+
+| Свойство | new/explore Architect Gate | verify Layer 4 Independent Challenge |
+|----------|---------------------------|--------------------------------------|
+| Роль | автор design-решения | адверсарий, атакует чужой design |
+| Цель | предложить подход | подтвердить, что подход решает Why оптимально |
+| Промпт | `mode=design`, Simplicity Check + альтернативы | `mode=design-challenge`, три обязательных вопроса (Q1 fit, Q2 optimality, Q3 fresh-eye) |
+| Закрывает Architect Gate? | да (для триггеров) | **нет** — это Layer 4 verify, отдельный gate |
+| Тип отчёта | `reports/architecture-*.md` | `reports/design-challenge-*.md` |
+| Триггер запуска | триггеры выше при создании ЗНИ | первый pre-apply verify или mtime(design.md) > snapshot.last_challenge_at |
+
+**Запрет.** Architect Gate из new/explore **не закрывается** файлом `design-challenge-*.md`, и наоборот — Layer 4 verify не считается выполненным по факту наличия `architecture-*.md`. Каждый gate ищет свой файл отчёта.
+
+---
+
+## DESIGN REVIEW (качество постановки)
+
+Отдельный набор триггеров для оценки **качества артефактов** (не архитектурного подхода). Основной потребитель — `/opsx:verify` (шаг 10). Apply не дублирует триггеры.
+
+Триггеры (ANY → мягкая рекомендация через AskQuestion, не блокирующая):
+
+- Bug fix (маркеры из `1c-agent-delegation.mdc`)
+- 2+ аналитических отчёта (trace-analysis + exploration суммарно ≥2)
+- `&ИзменениеИКонтроль` в proposal/design
+- Условные задачи в tasks.md (`При отрицательн`, `Если в п.`, `Альтернатив`, `workaround`, `Иначе`)
+- Hypothesis без секции `## Hypotheses` (`вероятно`, `возможно`, `гипотеза` в design)
+- Ручная конфигурация в tasks без исчерпывающих инструкций в design (Design Completeness)
+
+Фокус ревьювера: verified vs hypothesis, полнота acceptance criteria, покрытие сценариев, fallback/conditional paths, пропущенные риски.
+
+Закрытие: `reports/design-review-*.md` в change dir **или** явный отказ пользователя **или** триггеры не сработали.
+
+Исключения: Light/Mechanical Mode; change без аналитических отчётов, bug fix и conditional tasks; Design Review уже выполнен.
+
+---
+

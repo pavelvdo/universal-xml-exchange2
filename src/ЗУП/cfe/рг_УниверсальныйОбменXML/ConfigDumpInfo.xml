@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ConfigDumpInfo xmlns="http://v8.1c.ru/8.3/xcf/dumpinfo" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" format="Hierarchical" version="2.20">
+	<ConfigVersions>
+		<Metadata name="Catalog.рг_НастройкиОбменаXML" id="23dc5745-5740-4aa9-adbd-21686feb0ea3" configVersion="b6595b4865a3fc9d10569afb9450af4fa5a13b70">
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.ПрефиксБазыПриемника" id="00f9e92d-ae53-4065-80b0-77801e129613"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.TabularSection.Параметры.Attribute.ИмяПараметра" id="0337dac2-4908-45fb-af26-e173e6fe41b8"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.ПравилаОбменаДанными" id="05f04113-c60f-4644-a9dd-85818dccc737"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.TabularSection.Параметры.Attribute.ЗначениеПараметра" id="1f735707-5054-4f11-8c58-8d014f4fa6a7"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.TabularSection.Параметры" id="490c8fa9-1862-4a10-a874-e8f1e43a56f1"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.Источник" id="4de8634e-8a5f-4788-a41e-729dc6ead968"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.ИндентификаторРегламентногоЗадания" id="5fe86828-d87f-48b7-a0b2-b3e5fc20e398"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.ИмяМакетаПравил" id="94f91a35-bca6-4d72-9af6-83c801671dcc"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.АдресСервиса" id="a7867d8b-cd22-4aa4-948f-0f1a758230b6"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.Статус" id="a829b123-7849-406e-9358-9e00b432907f"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.Префикс" id="c99dcfb5-cae6-46aa-9748-065a3ef9c539"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.Логин" id="cac4b0a7-3d83-41ac-9cae-35e46320ac7a"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.Расписание" id="f8bb8179-7bc8-49d7-9b05-458e63b400c2"/>
+			<Metadata name="Catalog.рг_НастройкиОбменаXML.Attribute.ИспользоватьРасписание" id="fd4b87c6-8d23-42dd-bc44-57c9d3d30835"/>
+		</Metadata>
+		<Metadata name="Catalog.рг_НастройкиОбменаXML.Form.ФормаСписка" id="ceb84787-8b47-4478-9367-b83fb80868d1" configVersion="56cb5f7438d0b82335b3bbb2c73ed2c6652b967b"/>
+		<Metadata name="Catalog.рг_НастройкиОбменаXML.Form.ФормаСписка.Form" id="ceb84787-8b47-4478-9367-b83fb80868d1.0" configVersion="a28c38aed55b73b89d696bbc89b8b50657ffd163"/>
+		<Metadata name="Catalog.рг_НастройкиОбменаXML.Form.ФормаЭлемента" id="40684f8f-03f5-464c-b8f3-7648350398a7" configVersion="b777102028e951b5a489e118f2f235881ad08df2"/>
+		<Metadata name="Catalog.рг_НастройкиОбменаXML.Form.ФормаЭлемента.Form" id="40684f8f-03f5-464c-b8f3-7648350398a7.0" configVersion="849477155822b475ed2b6f78bc07c58c07879bf8"/>
+		<Metadata name="Catalog.рг_НастройкиОбменаXML.ObjectModule" id="23dc5745-5740-4aa9-adbd-21686feb0ea3.0" configVersion="f7581fdaf12506053cf55f76a936e44d65d0e7d8"/>
+		<Metadata name="CommonModule.рг_УниверсальныйОбменXMLСервер" id="6b4a7c7e-f592-47f1-a3ef-5d16218f8844" configVersion="84dadfba1704cf71cd105d74ec54c44e3de26c21"/>
+		<Metadata name="CommonModule.рг_УниверсальныйОбменXMLСервер.Module" id="6b4a7c7e-f592-47f1-a3ef-5d16218f8844.0" configVersion="c01f1f76a1ebc6683a7c34df5e30cbe8ba5f9e13"/>
+		<Metadata name="Configuration.рг_УниверсальныйОбменXML" id="4c113ec5-c5a1-46ba-b014-3f7cdbbbe8a7" configVersion="98a8deb4135d1bb1eb75b6e2c8a9f54de631c830"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML" id="0273fdf9-29e3-40f7-a734-b07ae9bcc6e5" configVersion="119ab3eb17541150aa045a1d82a4511901e9ce66">
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяФайлаПротоколаОбменаЗагрузка" id="04567718-f6ed-4f36-bd23-61e14b9477da"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ОткрыватьПротоколыОбменаПослеВыполненияОпераций" id="095fe427-f6eb-43f0-9f42-3b816f395242"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ЗаписыватьВИнформационнуюБазуТолькоИзмененныеОбъекты" id="0e556c63-b1e3-4a21-b6c3-159448b380ef"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ДатаНачала" id="105f5cef-298f-420b-8be8-730ab8bc0d6a"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяФайлаОбмена" id="15d3a58f-3a10-4f85-86e4-0f821814d9ef"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.АрхивироватьФайл" id="16ac0ca9-dfcf-4415-9976-d7c37368d32a"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ПрофильПриемника" id="222cf721-1b92-4f67-948d-e78760e01605"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ЗагружатьДанныеВРежимеОбмена" id="290528f0-1fe8-48d0-a591-333ca1617b5a"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИспользоватьТранзакции" id="2937667e-3bf2-4c35-b38a-54de2901c6b8"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ЗадаватьВопросПриЗагрузкеДанныхПриОткрытииОбработки" id="29ce0b52-5895-4ed3-893e-7dc2a554ad86"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ЗаписыватьРегистрыНаборамиЗаписей" id="2bd003d9-9694-459d-97d3-467f4841ffe6"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.НеЗадаватьВопросПриЗагрузкеДанныхПриОткрытииОбработки" id="2dac1f58-38c8-476c-89d7-afdda82168a5"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ОбъектыПоСсылкеЗагружатьБезПометкиУдаления" id="2dd5dcf4-2549-4412-8463-dde9925745e9"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.КоличествоЭлементовВТранзакцииПриВыгрузкеДляПлановОбмена" id="3039b27c-7737-490d-aea5-dc128ce8d7ad"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ОбработчикиСобытийЧитаемИзФайлаПравилОбмена" id="309ca063-20a4-49d7-a88f-a2b691a1d992"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ВестиДополнительныйКонтрольЗаписиВXML" id="313ef51b-2025-4906-b2d5-8770bb412419"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ТаблицаПравилОчистки" id="3ee39f2e-d1f0-4ff6-ad4c-b8f435c4c1c8"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ФлагРежимОтладки" id="4383a335-9a21-4a48-bd45-5ace686edb41"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ТаблицаНастройкиПараметров" id="445cf801-adfe-40e0-8ebc-da9ad4201976"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ТипИнформационнойБазыДляПодключения" id="46999eb4-2855-406a-b763-5fa7813d2fc6"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ОбработкиНастройкиЗагрузки" id="494b9a32-8509-4ad5-b574-479b17fdde40"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяИнформационнойБазыНаСервереДляПодключения" id="4a0aeaa7-5e5d-4b71-8f15-f91eba3de7e5"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяФайлаПравилОбмена" id="4b28dc56-994c-4d2b-a6ae-4ca3e490019c"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.Параметры" id="5109ca02-230b-464c-b08a-fba647bc87d3"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ТипУдаленияРегистрацииИзмененийДляУзловОбменаПослеВыгрузки" id="5510c0df-ff52-4454-8bc0-5ac670098d16"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.РежимОтладкиАлгоритмов" id="5cb6928b-4d67-40b0-865d-cecfc7cfd738"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИспользоватьТранзакцииПриВыгрузкеДляПлановОбмена" id="6068fb66-9633-44d1-86ab-a013ed2b5b61"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ВременныйКаталогРаботыСФайлами" id="6142d229-dd3c-4f1e-bee7-87815f062b22"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ПарольДляРаспаковкиФайлаОбмена" id="641b2d8f-9490-402b-a80c-4529dfb43153"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ОбрезатьСтрокиСправа" id="669d8478-aabf-454c-b341-b8940dec406e"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяВременногоФайлаПротоколаОбмена" id="6720531b-60a5-4378-ac31-fdc52e85434e"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ТаблицаПравилВыгрузки" id="6ef10081-ad0a-45f5-8d93-c888bd161eb5"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ДатаВыгрузкиДанных" id="72817b6b-7651-490b-9c63-4d2a6780d7b9"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ВерсияПлатформыИнформационнойБазыДляПодключения" id="7c1df1e0-905c-45cf-b0b0-6168c8d3c097"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ОбработкиНастройкиВыгрузки" id="7e7ff1c3-2c52-46a1-8bda-edcc8b0d5189"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.КаталогИнформационнойБазыДляПодключения" id="7efefc01-4eb4-43fe-9dd6-2b314b788dac"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ПарольДляСжатияФайлаОбмена" id="815db8f9-7353-4c9e-b67b-c88993d798fc"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.СохраненныеНастройки" id="822298b0-cda7-49cf-963c-a9cac8b6420b"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.КомментарийПриВыгрузкеДанных" id="829d47ee-8c02-4122-aa01-48f01f29f6e7"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяСервераИнформационнойБазыДляПодключения" id="82b8de01-2d9e-4afb-9840-a8fc2eca0bb2"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.РежимОбмена" id="834e726e-0449-47e0-b643-3a18eee2a365"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ВыполнитьОбменДаннымиВОптимизированномФормате" id="872bf099-4359-4658-b016-116f4cfddbe7"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ФлагРежимОтладкиОбработчиков" id="899938ef-5563-4a53-a11f-66df1ae5b02b"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.НастройкаАвтоматическойЗагрузкиДанных" id="8eee98f0-f4cd-4065-b214-74714ab5bb15"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ПостроительОтчета" id="90153497-1aef-4041-a419-d915b3a0999a"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ВыгружатьТолькоРазрешенные" id="903212ba-1764-4656-8ec3-b20deac508ea"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ФлагОшибки" id="98e98515-3e0a-40ce-85a2-87df5fd7f1a6"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.Комментарий" id="9b193db5-711a-4353-bae0-c63047e2c4bb"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ЭтоИнтерактивныйРежим" id="a050f65a-4672-4d66-989f-c0151f6adf85"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ОптимизированнаяЗаписьОбъектов" id="a08bc92a-d462-4ea0-9bfb-5075258dd3bd"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ВыводВОкноСообщенийИнформационныхСообщений" id="a22375a1-9b5e-44b3-b9e7-457fafc57e6e"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИспользоватьОтборПоДатеДляВсехОбъектов" id="a443ef12-f5a2-4fa8-b1fd-3685e93dbb08"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ПользовательИнформационнойБазыДляПодключения" id="a692fe04-ab9e-4226-82df-36207a52a985"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ДописыватьДанныеВПротоколОбмена" id="a6a6dd0d-52f4-48e0-950a-a23ad55adb74"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяФайлаВнешнейОбработкиОбработчиковСобытий" id="aa6af14c-135c-4e3a-a823-b0505b26dcaf"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ВыводВПротоколИнформационныхСообщений" id="b384cde3-a67d-4d2e-897a-06307d7a5944"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.КодировкаФайлаПротоколаОбмена" id="b54e81bd-1d11-4e8a-9be9-06e7d8ae7c60"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.БезопаснаяЗагрузка" id="b560504f-fe46-49b8-ba61-a1d457c1f468"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ВерсияПравилОбмена" id="b60e9d87-110e-4e26-96a4-635513cf637f"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ТаблицаПравилКонвертации" id="b757be1d-6a3d-4244-ac96-2fb6cd190b94"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяВременногоФайлаОбработчиковСобытий" id="ba68c1b7-9d34-45cf-933d-dc0f0a495f5a"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.АутентификацияWindowsИнформационнойБазыДляПодключения" id="bcc41ea8-a717-4d39-a358-79852773407c"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяФайлаОбработчиковСобытий" id="c518571d-5cc5-4f15-aa82-201a956d33bf"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.КомментарийПриЗагрузкеДанных" id="c99880d6-ad5d-4477-9878-ad143c6807a2"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.КоличествоОбработанныхОбъектовДляОбновленияСтатуса" id="d2274b03-a292-4ef9-bf35-463231bb6d5b"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.НеВыводитьНикакихИнформационныхСообщенийПользователю" id="d9df3cf3-9d5f-48ff-8291-77a7a6317f3c"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ИмяФайлаПротоколаОбмена" id="db82a372-af4f-4c92-8840-a3e3bb6a9cad"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.НепосредственноеЧтениеВИБПриемнике" id="e15e1dad-076e-4c47-82fa-426def54f151"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.Данные" id="ee0db603-2966-432e-8d14-b852e04e039b"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.БезопасныйРежим" id="f44d70b4-78a9-4361-bd8d-cd2cadf4600a"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ПарольИнформационнойБазыДляПодключения" id="f701fd84-1a74-475c-a69c-47c6a7cdd894"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ДатаОкончания" id="f827f447-1e88-4761-bb7a-c0d7ab309810"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.КоличествоОбъектовНаТранзакцию" id="fb1bc14c-31be-4cc8-87cd-dac2592c72ce"/>
+			<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Attribute.ВыводВПротоколСообщенийОбОшибках" id="fe97c11b-f9f0-4e4b-b985-1869a1e7404e"/>
+		</Metadata>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Form.УправляемаяФорма" id="5244b2de-75b9-41b0-a2fa-b13af2cad324" configVersion="6a42c30aed2f1dbb098776e82d9ba0653a65dc9c"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Form.УправляемаяФорма.Form" id="5244b2de-75b9-41b0-a2fa-b13af2cad324.0" configVersion="e8b3d4849f1ecac2efd56ca9be243b86b4875a9e"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Form.УправляемаяФормаНастройкиОтладкиОбработчиков" id="9a7f4e1e-f9b4-4db1-8e67-965ddcf753bb" configVersion="161bc779157d642c9df6184c00e26d89708f1d67"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Form.УправляемаяФормаНастройкиОтладкиОбработчиков.Form" id="9a7f4e1e-f9b4-4db1-8e67-965ddcf753bb.0" configVersion="abbf28689c31b399b8c49a4f46ac41593364e4ce"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Help" id="0273fdf9-29e3-40f7-a734-b07ae9bcc6e5.1" configVersion="ff773bc057a4790867b9dbcfd03870c9e66698a8"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.ObjectModule" id="0273fdf9-29e3-40f7-a734-b07ae9bcc6e5.0" configVersion="569ddc88eba548177767bf04aef71c756d937ed8"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Template.ОбщиеПроцедурыФункции" id="1b981cf3-12c4-478e-814d-2ac22f906a99" configVersion="8ba505bdbcee102df9c23aef960f072f11e1c7ab"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Template.ОбщиеПроцедурыФункции.Template" id="1b981cf3-12c4-478e-814d-2ac22f906a99.0" configVersion="cf12b08f317ff47c32119cc7d7ae113aad67169f"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Template.ПараметрыОбработчиков" id="f4d80701-0636-4cc8-adae-5622dfc4f209" configVersion="6c25be517d0286ff0fd9e6cd829e20e2912537ad"/>
+		<Metadata name="DataProcessor.рг_УниверсальныйОбменДаннымиXML.Template.ПараметрыОбработчиков.Template" id="f4d80701-0636-4cc8-adae-5622dfc4f209.0" configVersion="6d2f969d040b03aac5fcaebd198346a573c0771f"/>
+		<Metadata name="Enum.рг_СтатусыОбмена" id="1be25022-a2a7-40f3-81ae-b17cb87d3d6b" configVersion="b02480b7209e85b6a942321c6f623a7228305102">
+			<Metadata name="Enum.рг_СтатусыОбмена.EnumValue.Выполнено" id="8c7cfaef-5cb7-4b8f-8224-4f5dc155d7c1"/>
+			<Metadata name="Enum.рг_СтатусыОбмена.EnumValue.Новое" id="8c8d2cf3-28d0-4d25-b803-cf7657875586"/>
+			<Metadata name="Enum.рг_СтатусыОбмена.EnumValue.Выполняется" id="c905a9e2-6596-4661-8ccd-19f6a7e99cde"/>
+			<Metadata name="Enum.рг_СтатусыОбмена.EnumValue.Ошибка" id="f221ce15-3402-49d1-aade-dd85dfcbb3cd"/>
+		</Metadata>
+		<Metadata name="Language.Русский" id="60e36b62-5aeb-4a12-abfb-96995fadb4f4" configVersion="3c3657a7c2dced880fdffbc8912b2d7017b667d6"/>
+		<Metadata name="Role.рг_ИспользованиеОбменаXML" id="adc43264-c305-441e-b86e-4829aeb02dee" configVersion="c0658dac6552c1ec0a5f116c8b68fd5de9b890f3"/>
+		<Metadata name="Role.рг_ИспользованиеОбменаXML.Rights" id="adc43264-c305-441e-b86e-4829aeb02dee.0" configVersion="76a82bf62f28198738e9fcfae33b455451588374"/>
+		<Metadata name="ScheduledJob.рг_ВыполнениеОбменаXML" id="1a133624-b30e-46c9-9f39-0ac3eb5d4e2e" configVersion="44f4885d93c4ca668bf5cb598f29a1091e1a4dae"/>
+		<Metadata name="Subsystem.рг_УниверсальныйОбменXML" id="74b2ba16-4f06-4225-868c-d143f1f42a2a" configVersion="cad4eee7008bf63db42c4236b87b14c23872f8ce"/>
+		<Metadata name="WebService.rgExchangeService" id="992c3daf-e944-4d1a-af28-ddc9259caa22" configVersion="bc65a243d0f8a0220c0b907b3ce9efdff8744896">
+			<Metadata name="WebService.rgExchangeService.Operation.GetData.Parameter.pref" id="609e6b3a-5b8e-492b-a600-b89dcc17526c"/>
+			<Metadata name="WebService.rgExchangeService.Operation.GetData.Parameter.prefReceive" id="6312d700-75ad-45aa-8617-20a46d6dbe57"/>
+			<Metadata name="WebService.rgExchangeService.Operation.ConfirmDataReceipt.Parameter.pref" id="86e2b355-e3d2-4746-92d0-6e96e69621ad"/>
+			<Metadata name="WebService.rgExchangeService.Operation.GetData" id="aa4ae748-4e73-4d0e-bac5-44930169ef2d"/>
+			<Metadata name="WebService.rgExchangeService.Operation.ConfirmDataReceipt" id="abe52aa1-0639-4480-9388-b2956f4955d1"/>
+			<Metadata name="WebService.rgExchangeService.Operation.ConfirmDataReceipt.Parameter.prefReceive" id="cc292279-c462-47b9-b705-fd5556c9b29b"/>
+		</Metadata>
+		<Metadata name="WebService.rgExchangeService.Module" id="992c3daf-e944-4d1a-af28-ddc9259caa22.0" configVersion="bece329c570d4f9bbe6c4cc9a0b771876edf3498"/>
+	</ConfigVersions>
+</ConfigDumpInfo>

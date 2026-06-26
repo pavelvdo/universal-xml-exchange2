@@ -1,0 +1,40 @@
+# Шаблон таксономии Knowledge Base — заготовка для /opsx:knowledge-init
+# Скопировать в openspec/knowledge/_taxonomy.yaml и заполнить под проект.
+# Правила формата — .cursor/rules/knowledge-format.mdc; алгоритм генерации —
+# .cursor/skills/openspec-knowledge-init/SKILL.md (id доменов, транслитерация).
+
+version: 1
+updated-at: "<ISO-дата генерации>"
+
+domains:
+  # По одному домену на каждую базовую конфигурацию src/*/cf.
+  # id строится детерминированно: <configSlug>_cf (см. SKILL knowledge-init, шаг 2).
+  - id: <ConfigSlug>_cf
+    title: "<Имя базовой конфигурации>"
+    source: src/<Конфигурация>/cf
+    owner: vendor          # типовое поведение; владелец — вендор
+    subdomains:
+      - approval           # согласование
+      - tasks              # задачи / бизнес-процессы
+      - common             # общие модули
+      - ui                 # формы и интерфейс
+
+  # По одному домену на каждое расширение src/*/cfe/*.
+  - id: <ExtensionSlug>
+    title: "<Имя расширения>"
+    source: src/<Конфигурация>/cfe/<Расширение>
+    owner: project         # доработки проекта
+    subdomains:
+      - <подсистема-или-ключевой-модуль>   # из architecture.md / эвристики
+
+# Блок cross обязателен (knowledge-init шаг 2 копирует его из этого шаблона).
+cross:
+  scope-rules:
+    - >
+      Факты с anchor в домене <base>_cf описывают типовое поведение,
+      владелец — вендор. Перехваты и расширение этого поведения
+      описываются в доменах расширений и связываются через related.kb.
+    - >
+      Факт размещается в домене по anchor.path (где живёт код),
+      а не по тому, кто его вызывает.
+  fallback-domain: <ExtensionSlug>   # домен по умолчанию для фактов без явного anchor-домена

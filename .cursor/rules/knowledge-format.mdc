@@ -1,0 +1,464 @@
+---
+description: "Knowledge Base — формат KB-фактов, anchor spec, verify-алгоритм, TTL, governance"
+alwaysApply: false
+---
+
+# Knowledge Base — формат и lifecycle
+
+Атомарные верифицированные факты о системе, на которые опираются будущие ЗНИ. KB-факты переживают archive changes и подтягиваются через Discovery в `/opsx:explore` и `Architect Gate`. В отличие от ADR (решение с trade-off) и spec (требование), KB — это **как есть**: контракт, поведение, цепочка вызовов, имя события ЖР.
+
+## РАСПОЛОЖЕНИЕ
+
+- **Корень:** `openspec/knowledge/`
+- **Файл:** `openspec/knowledge/<domain>/KB-NNNN-slug.md` (NNNN — четырёхзначный номер, slug — kebab-case)
+- **Индекс:** `openspec/knowledge/README.md` — описание модели + (опционально) таблица всех KB
+- **Машиночитаемый индекс:** `openspec/knowledge/_index.yaml` — для быстрого Discovery
+- **Таксономия:** `openspec/knowledge/_taxonomy.yaml` — словарь доменов/субдоменов
+- **Шаблон таксономии:** `openspec/knowledge/_taxonomy.template.yaml` — заготовка для `/opsx:knowledge-init`
+- **Архив:** `openspec/knowledge/_archive/` — deprecated/superseded KB
+- **Стабильные первоисточники standalone-capture:** `openspec/knowledge/_sources/knowledge-add/<YYYY-MM-DD-slug>/sources/` — копии reports/заметок, из которых `/opsx:knowledge-add` создал KB.
+
+### Где живут source-отчёты для KB
+
+- `temp/reports/` — короткоживущие standalone-отчёты вне ЗНИ; могут устаревать и очищаться, поэтому `/opsx:knowledge-add` при сохранении копирует их в bundle.
+- `openspec/changes/<name>/reports/` — отчёты активной ЗНИ; при archive становятся стабильным источником по пути `openspec/changes/archive/<YYYY-MM-DD-name>/reports/`.
+- `openspec/knowledge/_sources/knowledge-add/<YYYY-MM-DD-slug>/sources/` — стабильные первоисточники standalone-capture после подтверждённого bundle-on-save.
+
+Корневой каталог `reports/` и другие ad-hoc каталоги под корнем репозитория **запрещены** как место сохранения аналитических отчётов. При обнаружении `reports/` аудит/инициализация должны выдать warning: перенести содержимое в `temp/reports/` или в `openspec/changes/<name>/reports/` по контексту.
+
+### Whitelist содержимого корня `openspec/knowledge/`
+
+Корень `openspec/knowledge/` имеет **строгий whitelist**. Любой файл/каталог, которого нет в списке, считается посторонним и подлежит выносу:
+
+**Разрешённые подкаталоги:**
+- `<domain>/` — один подкаталог на каждый домен из `_taxonomy.yaml`. Внутри — `KB-NNNN-slug.md` или вложенные `<subdomain>/KB-NNNN-slug.md`.
+- `_archive/` — служебный подкаталог для deprecated/superseded KB.
+- `_sources/` — служебный подкаталог для стабильных первоисточников standalone-capture. Разрешённая структура: `_sources/knowledge-add/<YYYY-MM-DD-slug>/sources/...` и `_sources/knowledge-add/<YYYY-MM-DD-slug>/knowledge-add-report.md`.
+
+**Разрешённые файлы в корне:**
+- `_index.yaml`
+- `_taxonomy.yaml`
+- `_taxonomy.template.yaml`
+- `README.md`
+
+**Запрещено:**
+- Произвольные подкаталоги (`meta/`, `tmp/`, `notes/`, `drafts/`, `process/`, `audit/` и т. п.).
+- Произвольные `.md` в корне, кроме `README.md` (любые `audit-*.md`, `report-*.md`, `notes-*.md` и т. п.).
+- Файлы любых других расширений (`.txt`, `.json`, `.log`).
+
+**Куда переносить посторонние файлы:**
+- Процессные отчёты, аудит процесса, заметки → `temp/reports/`.
+- Артефакты ЗНИ → `openspec/changes/<name>/reports/` (или соответствующий архив).
+- Архитектурные решения → `openspec/adrs/`.
+
+Проверка whitelist выполняется в `/opsx:knowledge-audit` (structure check) и в `/init-project` (Phase 0).
+
+## ФОРМАТ KB-ФАЙЛА
+
+```markdown
+---
+id: KB-NNNN
+title: Краткий заголовок факта (≤80 символов)
+domain: <domain из _taxonomy.yaml>
+subdomain: <subdomain из _taxonomy.yaml>
+status: active                     # active | stale | deprecated | superseded
+verified-at: YYYY-MM-DD
+verified-by: archive               # archive | knowledge-add | audit
+ttl-days: 90
+anchors:
+  - type: procedure
+    path: src/ДО3/cfe/<ext>/CommonModules/<name>/Ext/Module.bsl
+    name: ИмяПроцедуры
+    fingerprint:
+      declaration: "Процедура ИмяПроцедуры(Парам1, Парам2) Экспорт"
+      body-head:
+        - "ПервыеПятьСтрокТела();"
+        - "БезКомментариев = Истина;"
+        - "БезПустыхСтрок = Истина;"
+        - "ПозволяютВизуальнуюВерификацию();"
+        - "ОстанавливаемсяНаКонецПроцедурыРаньшеЕслиТелоКороче();"
+  - type: event-name
+    value: "ИмяСобытияЖР"
+    expected-occurrences: ">=1"
+source:
+  report: openspec/changes/archive/YYYY-MM-DD-<name>/reports/<report>.md
+  lines: "120-180"
+  also-mentioned-in: []
+related:
+  adr: [ADR-NNNN]
+  specs: [<capability>]
+  kb: [KB-MMMM]
+supersedes: []                     # [] или [KB-XXXX] при status: superseded
+supersedes-by: null                # null или KB-XXXX
+metrics:
+  used-count: 0
+  last-used-at: null
+  drift-detected-count: 0
+invariant: false                   # true — контракт нельзя молча отменять без Blast Radius / precedent audit
+breaks-on-removal: ""              # одно предложение: бизнес-последствия, если инвариант перестаёт выполняться
+protected-by-changes: []           # openspec/changes/archive/... имена change, установивших контракт
+---
+
+## Факт
+
+2-5 абзацев. Описывает верифицированное поведение/контракт. Без спекуляций.
+Ссылается на якоря по имени (`см. anchor ИмяПроцедуры`).
+
+## Почему это knowledge, а не ADR/spec
+
+1-2 предложения: нет trade-off (иначе ADR), не требование (иначе spec), описывает «как есть».
+```
+
+### Инвариантные KB (`invariant: true`)
+
+- Ставится только если факт фиксирует контракт поведения, отмена которого меняет бизнес-смысл для пользователя 1С (например «после автоподстановки задача сохраняет связь с ролью»).
+- Обязательны поля `breaks-on-removal` и при возможности `protected-by-changes`.
+- В Discovery передаются в промпт **всегда** при совпадении `anchor-paths`, помечаются строкой `ИНВАРИАНТ` (см. §DISCOVERY); не подлежат вытеснению из бюджета Top-10 обычными фактами — см. §БЮДЖЕТ VERIFY.
+- **Behavioral-drift** на якоре с `invariant: true` → классификация **только** `review-required`; auto-repair и read-repair без явного решения пользователя **запрещены**.
+
+## ТИПЫ ANCHOR'ОВ
+
+Четыре типа, каждый с собственными полями и процедурой verify.
+
+### `procedure` — BSL процедура/функция
+
+Поля:
+- `path` — путь к `Module.bsl` (ObjectModule/ManagerModule/Ext/Module.bsl).
+- `name` — имя процедуры/функции.
+- `fingerprint.declaration` — точная строка объявления (после нормализации пробелов).
+- `fingerprint.body-head` — **массив** из первых 5 не-пустых, не-комментарийных строк тела (после `trim` каждой строки).
+
+Правила fingerprint:
+- `declaration` сохраняется **после нормализации**: одна пробельная последовательность → один пробел, trim.
+- `body-head` — массив строк (а не hash), чтобы человек мог визуально сверить и увидеть diff при drift. Устойчив к добавлению комментариев и перестановке процедур в модуле, но детектит изменение логики в начале тела.
+- Сравнение `body-head`: по каждой строке после `trim` и нормализации whitespace. Regex/substring — нет; только точное равенство нормализованных строк.
+
+### `event-name` — имя события журнала регистрации или строковая константа
+
+Поля:
+- `value` — точная строка.
+- `expected-occurrences` — `>=N` (минимум N встреч в коде) или `=N` (ровно N).
+
+### `metadata-object` — объект метаданных XML
+
+Поля:
+- `path` — путь к XML (например, `src/.../ObjectName.xml`).
+- `object-type` — тип (Catalog, Document, CommonModule, HTTPService…).
+- `name` — значение тега `<Name>`.
+
+### `query-pattern` — ключевой паттерн запроса 1С
+
+Поля:
+- `signature` — массив ключевых фраз, идентифицирующих запрос (таблица + поле, JOIN, ВТ<Name>).
+- `min-files` — минимум файлов, в которых должен встречаться (защита от случайного совпадения).
+
+## СТАТУСЫ
+
+| Статус | Значение | В Discovery |
+|--------|----------|-------------|
+| `active` | Верифицирован, TTL не истёк | Да |
+| `stale` | TTL истёк ИЛИ verify обнаружил drift, ждёт ревизии | Да, с пометкой |
+| `deprecated` | Ручная пометка: факт устарел, замены нет | Нет |
+| `superseded` | Заменён другим KB (поле `supersedes-by`) | Нет |
+
+## TTL POLICY
+
+TTL выбирается по типу факта, **не произвольно**:
+
+| Тип факта | TTL | Обоснование |
+|-----------|-----|-------------|
+| Контракт внешнего API (Диадок, БШИ, КриптоПро) | 30 дней | Сервер-контракт меняется без уведомления |
+| Точка расширения (`&Вместо`/`&После`) в типовой процедуре | 60 дней | Базовая конфигурация `cf` обновляется периодически |
+| Цепочка вызовов / поведение внутри расширения | 90 дней | Стабильнее, но свой код меняется часто |
+| Имя события ЖР, константа, метаданные | 180 дней | Стабильные идентификаторы |
+
+TTL фиксируется при создании KB. После истечения → status переходит в `stale` при следующем verify.
+
+## АЛГОРИТМ VERIFY
+
+Вход: массив anchor'ов KB-файла. Выход: статус по каждому anchor'у + агрегат по KB.
+
+### По типам anchor
+
+```
+CASE anchor.type:
+  procedure:
+    content = Read(anchor.path)
+    IF content is None OR anchor.name NOT IN content:
+      RETURN anchor-missing
+    decl_found = Grep(content, "^(Процедура|Функция)\s+" + anchor.name + "\b")
+    IF decl_found is empty:
+      RETURN anchor-missing
+    actual_decl = normalize_whitespace(decl_found[0])
+    IF actual_decl != normalize_whitespace(anchor.fingerprint.declaration):
+      RETURN signature-drift (actual = actual_decl)
+    actual_body_head = first_n_non_empty_non_comment_lines(content, decl_line, 5)
+    actual_normalized = [normalize_whitespace(line) for line in actual_body_head]
+    expected_normalized = [normalize_whitespace(line) for line in anchor.fingerprint.body-head]
+    IF actual_normalized != expected_normalized:
+      RETURN behavioral-drift (actual_head = actual_body_head)
+    RETURN verified
+
+  event-name:
+    matches = Grep(src/, anchor.value)
+    IF NOT satisfies(matches.count, anchor.expected-occurrences):
+      RETURN count-drift (actual = matches.count)
+    RETURN verified
+
+  metadata-object:
+    IF Glob(anchor.path) is empty:
+      RETURN anchor-missing
+    xml = Read(anchor.path)
+    IF <Name>anchor.name</Name> NOT IN xml:
+      RETURN signature-drift
+    RETURN verified
+
+  query-pattern:
+    hits = Grep(src/**/Module.bsl, all(anchor.signature))
+    IF hits.file_count < anchor.min-files:
+      RETURN anchor-missing
+    RETURN verified
+```
+
+### Нормализация пробелов для `declaration`
+
+- Все последовательности whitespace (пробелы, табы) → один пробел.
+- Удалить leading/trailing whitespace.
+- Сравнение — case-sensitive (имена процедур регистрозависимы в BSL-строке объявления).
+
+### Извлечение `body-head`
+
+1. Найти строку `declaration`, двигаться вниз.
+2. Пропустить пустые строки и однострочные комментарии (`//` в начале строки после `trim`).
+3. Остановиться на `КонецПроцедуры` / `КонецФункции` или после 5 собранных строк.
+4. Каждую строку `trim`, сохранить как элемент YAML-массива.
+5. Почему массив, а не hash: человек может визуально сверить при drift, а diff-инструменты (в audit-отчёте) покажут точное различие. Стоимость хранения незначительна.
+
+### Агрегирующий статус KB
+
+- Все anchors `verified` → KB `verified`.
+- Любой anchor `behavioral-drift` → KB `behavioral-drift` (приоритетный).
+- Любой anchor `signature-drift` (и нет behavioral) → KB `signature-drift`.
+- Любой anchor `anchor-missing` → KB `anchor-missing`.
+- Mix с `verified` — KB наследует худший статус, в отчёте указываются все drift-anchors.
+
+### Drift → status (при automatic update)
+
+| Verify-результат | Автоматическое изменение status |
+|------------------|--------------------------------|
+| `verified` (на HEAD через >7 дней после verified-at) | auto-refresh `verified-at` (mechanical) |
+| `behavioral-drift` на факте с `invariant: true` | **всегда** `review-required`; auto-repair **запрещён**; отчёт verify может поднять CRITICAL `invariant-drift` |
+| `signature-drift`, `behavioral-drift`, `anchor-missing`, `count-drift` + `auto-repairable` (и **не** invariant behavioral-drift) | read-repair: обновить KB, оставить/вернуть `active`, refresh `verified-at` |
+| `signature-drift`, `behavioral-drift`, `anchor-missing`, `count-drift` + `review-required` | `active` → `stale`, отчёт содержит карточку решения |
+| `signature-drift`, `behavioral-drift`, `anchor-missing`, `count-drift` + `deprecate-candidate` | статус не удалять автоматически; отчёт содержит карточку `deprecate` / `merge` / `delete --force-delete` / `keep with justification` |
+| `verify-failed` (retry не помог) | `stale` + `verify-error` в metadata |
+
+### Read-repair classification
+
+`/opsx:knowledge-audit` не должен останавливаться на сыром `stale`, если найденный drift можно безопасно исправить по текущему `src/`.
+
+Классы drift:
+
+- `auto-repairable` — anchor найден, `declaration` совпал, факт остаётся тем же, а изменение ограничено `fingerprint`/`body-head` или очевидным добавлением уже принятой логики, которую можно верифицировать по текущему коду без доменных предположений.
+- `review-required` — anchor найден, но изменились контракт, цепочка вызовов, владелец поведения, пользовательский смысл или текст факта требует выбора человеком.
+- `deprecate-candidate` — anchor исчез, факт больше не описывает рабочее поведение, дублирует ADR/spec/комментарий или не проходит Reuse Value Test.
+
+Read-repair для `procedure` anchor:
+
+1. Если `declaration` совпал, процедура найдена, а `body-head` изменился, audit извлекает актуальные первые 5 непустых не-комментарий строк.
+2. Если у KB `invariant: true` и классификация drift = `behavioral-drift` → **не** классифицировать как `auto-repairable`; только `review-required` и карточка решения пользователю.
+3. Audit сравнивает текст факта с изменением: если достаточно синхронизировать отпечаток и 1–2 предложения без изменения смысла, это `auto-repairable` (**кроме** п.2).
+4. При `auto-repairable` audit обновляет `fingerprint.body-head`, при необходимости минимально правит `## Факт`, выставляет `status: active`, обновляет `verified-at`, `verified-by: audit`, `_index.yaml` и фиксирует действие в отчёте `Read-repair выполнен`.
+5. Если факт требует нового решения или пересмотра связанного поведения, audit ставит `stale` только после классификации `review-required` и указывает конкретные варианты действий.
+
+## FAILURE MODES
+
+| Случай | Действие |
+|--------|----------|
+| Corrupt YAML front-matter | Skip KB, warning в отчёте, скилл продолжает |
+| Путь anchor вне `src/` | Skip + warning (защита от path traversal) |
+| Read/Grep timeout | Retry 1 раз, затем `verify-failed` |
+| Множественный match по `name` в одном файле | Взять первый + warning, предложить уточнить anchor через `/opsx:knowledge-audit --ids` |
+| `_index.yaml` рассинхронизирован с `.md` | Warning + предложение `/opsx:knowledge-audit --reindex` |
+| Пустой `_index.yaml` | Discovery возвращает пустой список, не ошибка |
+| `anchor-missing` но `name` найден в другом модуле (фаззи) | `anchor-missing` + hint «найдено в X — возможно перенесено» |
+| Переименование процедуры | `anchor-missing` → audit: `supersede-by` или `update` |
+| Reuse value not justified | `Deferred — reuse value not justified`: при extraction не записывать KB и добавить Warnings; при audit добавить в `Reuse Value Warnings` с проваленными критериями |
+| Не-KB файл/каталог в `openspec/knowledge/` (вне whitelist; `_sources/` разрешён только в структуре `knowledge-add/<YYYY-MM-DD-slug>/...`) | Warning в audit-отчёте: `Structure: <path> вне формата. Перенести в temp/reports/ или openspec/changes/<name>/reports/`. Не блокирует audit. `/init-project` Phase 0 предлагает action через AskQuestion |
+
+## БЮДЖЕТ VERIFY
+
+- **explore / Architect Gate:** не более 10 KB за Discovery, сортировка по релевантности.
+- **Инвариантные факты (`invariant: true`):** при совпадении `anchor-paths` со scope — включать в промпт **в первую очередь** (до 5 фактов), независимо от Top-10; после них добирать обычные факты до общего лимита 10 или расширять бюджет на ≤30% базового промпта архитектора при наличии invariant-хитов (см. `.cursor/rules/precedent-regression-gate.mdc`).
+- **archive шаг 2b:** только KB, чьи `anchor.path` ∈ git-diff текущей ЗНИ.
+- **audit без флагов:** full-revisit всех KB: verify anchors + Reuse Value Test по каждому факту. Если в KB > 50 фактов суммарно и не задан `--domain`, audit сначала задаёт AskQuestion: `full` / `overdue-only` / `by-domain`.
+- **audit `--overdue`:** только `stale` + TTL-просроченные.
+- **audit `--domain X`:** все KB домена, верхний предел 100 (иначе предлагается `--overdue` внутри домена).
+
+## KNOWLEDGE-WORTHY КРИТЕРИИ
+
+### Reuse Value Test (обязательный)
+
+Перед созданием KB и на full-revisit audit каждый факт проходит бинарный тест ценности переиспользования. Кандидат проходит только если на все 5 вопросов ответ **да**. Любой ответ **нет** или **не уверен** → `Deferred — reuse value not justified`: факт не записывается в KB, а попадает в Warnings extraction или секцию audit-отчёта `Reuse Value Warnings`.
+
+1. **Конкретный сценарий.** Можно назвать ≥1 будущую ЗНИ/ситуацию, где факт явно потребуется при принятии решения, расследовании или реализации. Формулировка «может пригодиться» не проходит.
+2. **Стабильный якорь.** Якорь привязан к устойчивому артефакту (`procedure`, `event-name`, `metadata-object`, `query-pattern`), а не к временной строке отчёта или одноразовому наблюдению.
+3. **Не восстанавливается Grep'ом за 30 секунд.** Ценность факта выше простого имени/местоположения; он экономит повторное понимание поведения, контракта, цепочки или инварианта.
+4. **Не покрывается ADR/spec/комментарием в коде.** Факт не дублирует архитектурное решение, требование, явный inline-комментарий или process-note.
+5. **Цена молчаливой потери.** Если факт исчезнет, устареет или будет проигнорирован, возможны баг, регрессия, неверный архитектурный выбор, сломанный мониторинг или дорогое повторное расследование.
+
+`why-knowledge` в KB-карточке обязан явно назвать `reuse-scenario` из критерия 1. Если честный сценарий переиспользования не формулируется, факт остаётся в source-report и не становится KB.
+
+### Заслуживает KB (создавать)
+
+- Верифицированный факт о поведении/контракте, на который будут опираться будущие ЗНИ.
+- Не является решением с trade-off (→ ADR) и не является требованием (→ spec).
+- Примеры:
+  - «Процедура `НайтиСопоставлениеДокумента` возвращает массив ссылок, а не одну ссылку — даже при единственном совпадении» — описывает как работает.
+  - «Регламентное задание `Диадок_РегламентныеДействия` вызывает `ВыполнитьАвтосопоставлениеВходящих` через `КД_ПодключаемыйМодульДиадок.НайтиИСопоставитьВходящиеДокументы`» — verified chain.
+  - «Имя события ЖР `Диадок.ОкончаниеПоискаИсопоставленияВходящихДокументов` используется мониторингом» — стабильный контракт.
+  - «Форма пакета устанавливает `ТекущийДокумент` через `УстановитьТекущийДокументПакета`, после чего инвариант: `ТекущийДокумент` совпадает со строкой выбранного документа таблицы пакета» — инвариант.
+
+### НЕ заслуживает KB (не создавать)
+
+- Тривиальное: «Модуль называется КД_Диадок».
+- Решение с trade-off: «Мы выбрали `&Вместо`, а не `&После`» — это **ADR**.
+- Требование: «Пользователь должен видеть PDF при открытии пакета» — это **spec**.
+- Debug-контекст: «2 апреля упал кейс X» — не переживёт.
+- Спекуляция без верификации кода.
+
+### Правило дедупликации
+
+Один факт = один KB. Если факт упоминается в нескольких `reports/`:
+- В `source.report` — наиболее подробный.
+- Остальные → в `source.also-mentioned-in`.
+- При близком title/anchors-overlap с существующим KB — `supersedes` или `merge`, а не новый KB.
+
+## ИНДЕКС `_index.yaml`
+
+Единый машиночитаемый источник для Discovery. Пишется только из `archive` шаг 5.5, `/opsx:knowledge-add` и `/opsx:knowledge-audit`.
+
+```yaml
+version: 1
+updated-at: YYYY-MM-DDTHH:MM:SSZ
+facts:
+  - id: KB-NNNN
+    path: <domain>/<subdomain>/KB-NNNN-slug.md    # относительно openspec/knowledge/
+    domain: КонтурДиадок
+    subdomain: incoming
+    status: active
+    verified-at: YYYY-MM-DD
+    ttl-days: 90
+    anchor-paths:
+      - src/ЕРПУХ/cfe/.../Module.bsl
+    related-adr: [ADR-NNNN]
+    title: "Краткий заголовок"
+    invariant: false              # опционально в индексе; источник истины — front-matter KB-файла
+```
+
+- Запись атомарная: сначала `.md`, затем полная перезапись `_index.yaml` из состояния каталога.
+- Fallback: `/opsx:knowledge-audit --reindex` пересобирает индекс из `.md`-файлов (файлы — источник истины).
+
+## DISCOVERY
+
+Универсальный алгоритм для explore / Architect Gate / archive шаг 2b:
+
+1. Read `openspec/knowledge/_index.yaml` и при необходимости front-matter `.md` для поля `invariant`.
+2. Исключить `deprecated` / `superseded`.
+3. **Invariant-first:** все факты с `invariant: true` (в индексе или в `.md`), у которых `anchor-paths` пересекается с {scope files}, собрать в список **ИНВАРИАНТ** (макс. 5).
+4. Primary-фильтр (`anchor-paths`): точное совпадение `anchor-paths` ∈ {scope files}. Это главный детерминированный сигнал Discovery.
+5. Secondary-фильтр (`domain`): выполнять только если primary пусто И в scope есть путь под зарегистрированным `domain.source` из `_taxonomy.yaml`. Выбрать факты этого domain, затем ранжировать по совпадению токенов из `scope-files` / user query с `title` и `anchor-paths` (например имя подсистемы/модуля), затем по `used-count`. Взять Top-5.
+6. Объединить: сначала список из п.3, затем результаты primary/secondary без дубликатов ID, затем Sort: `active` перед `stale`, затем по lexical relevance, затем по `used-count` (популярные выше).
+7. Top-10 по релевантности (инварианты из п.3 не вытесняются).
+8. Read выбранные `.md`-файлы.
+9. Для каждого прочитанного KB инкремент `used-count` и обновление `last-used-at` (через audit-протокол — запись только в writer-stages; read-stages добавляют в `metrics-queue` для следующего audit).
+
+Формат строки в блоке `## Existing Knowledge` для инварианта: префикс `ИНВАРИАНТ` перед `KB-NNNN`.
+
+## GOVERNANCE
+
+### Writer contract
+
+**Пишут в KB и `_index.yaml`:**
+- `/opsx:archive` — шаг 5.5 (Facts extraction), шаг 2b-follow-up (только warnings).
+- `/opsx:knowledge-add` — standalone extraction из reports/markdown вне ЗНИ; при необходимости стабилизирует source в `openspec/knowledge/_sources/knowledge-add/...`.
+- `/opsx:knowledge-audit` — все режимы.
+
+**НЕ пишут** (только read + proposal):
+- `/opsx:explore` — drift копится в итоговом сообщении explore (свод / блок «Постановка ЗНИ»), обрабатывается через audit по запросу пользователя.
+- `Architect Gate` — факты передаются архитектору как контекст, drift в architecture-report.
+- `explore`, `new`, `verify`, `apply`, `archive`, `extend`, `status`, `sync`, `bulk-archive`, `knowledge-add`, `review`, `init-project` — read-only (кроме явных write-режимов команды).
+
+### Ретроактивная миграция НЕ делается
+
+Осознанное решение: не извлекать KB из 31 архивной ЗНИ ретроспективно.
+
+Причины:
+- Старые `reports/` могут содержать устаревшие данные — верификация дорогая.
+- Фокус — новый поток, agent-driven extraction на свежем контексте.
+
+Исключение: точечный пилот на 2-3 свежих архивах для проверки формата. Запускается через `/opsx:knowledge-audit --from-archive <name>` — повторное применение протокола archive шаг 5.5 к уже архивированной ЗНИ. Это **не** массовая миграция: каждый запуск ограничен одной ЗНИ и единым AskQuestion (см. `openspec-knowledge-audit/SKILL.md`).
+
+### KB-archive policy (борьба с перенаселением)
+
+- `openspec/knowledge/_archive/` — для устаревших KB.
+- Правила миграции:
+  - `status: deprecated` + возраст > 6 месяцев → auto в `_archive/` при `/opsx:knowledge-audit`.
+  - `status: superseded` → сразу в `_archive/` (живёт только новая версия).
+- Soft-budget: **50 фактов на (domain + subdomain)**. При превышении — `/opsx:knowledge-audit --metrics` выдаёт warning «рассмотрите консолидацию».
+
+### Удаление
+
+Запрещено через обычные `archive`/`audit`. Требует `--force-delete` и подтверждения пользователя. Причины:
+- `_archive/` с `deprecated` сохраняет контекст лучше, чем git-history.
+- Низкий риск случайной потери знания.
+
+## МЕТРИКИ И FEEDBACK LOOP
+
+Счётчики в YAML front-matter KB + в `_index.yaml`:
+
+| Метрика | Источник | Интерпретация |
+|---------|----------|---------------|
+| `used-count` | explore/gate → metrics-queue → audit применяет | < 3 за 6 мес → кандидат на `deprecated` |
+| `drift-detected-count` | verify при любом запуске | Высокий → факт нестабильный, уменьшить TTL |
+| `last-used-at` | при Discovery-hit | Индикатор холодной зоны |
+| Avg `used-count` по домену | `/opsx:knowledge-audit --metrics` | Низкий → пересмотр критериев для домена |
+
+Отчёт `/opsx:knowledge-audit --metrics`:
+- Топ-10 used → кандидаты на TTL-up до 180 дней.
+- Мёртвые (`used-count: 0` и возраст > 180 дней) → предложить `deprecated`.
+- Домены > 50 фактов → warning.
+- Avg TTL vs drift-detected-count → калибровка.
+
+Через 3 месяца после запуска механизма — ретроспектива по метрикам, корректировка TTL и критериев в этом файле.
+
+## ИНТЕГРАЦИЯ С ADR И SPEC
+
+- **ADR:** `related.adr` — ссылки на связанные решения. При конфликте KB ↔ ADR — architecture-report фиксирует в `## Knowledge conflicts`, разрешает архитектор + пользователь.
+- **Spec:** `related.specs` — capability из `openspec/specs/*/`. Spec описывает требование, KB — как оно сейчас реализовано.
+- **ADR супер сильнее KB** в конфликте поведения: если решение принято, а KB описывает старое — KB переходит в `superseded` или `stale`.
+
+## КОГДА СОЗДАВАТЬ / ОБНОВЛЯТЬ
+
+| Точка workflow | Действие |
+|----------------|----------|
+| **archive** (шаг 5.5) | Основная точка создания из `reports/`. Бюджет ≤5 KB. |
+| **archive** (шаг 2b) | Verify KB в scope git-diff. Drift в warnings, не создание. |
+| **knowledge-add** | Создание из standalone reports/markdown вне ЗНИ. Бюджет ≤5 KB, source bundle только после подтверждения пользователя. При пустом вызове разрешён Session Context Fallback: source берётся только из уже видимых в сессии путей и всё равно подтверждается через AskQuestion. |
+| **explore** (Knowledge Discovery) | Read-only + drift accumulator → итоговое сообщение explore (свод / блок «Постановка ЗНИ»). |
+| **Architect Gate** | Read-only, передача фактов в промпт архитектора. |
+| **knowledge-audit** | Массовая ревизия (TTL / drift / metrics / reindex) + full-revisit Reuse Value Test для отсева шума. |
+
+Reuse Value Test обязателен в `archive` шаг 5.5, `/opsx:knowledge-add` и `/opsx:knowledge-audit` full-revisit. В `explore` и `Architect Gate` он не меняет KB напрямую: сомнительные факты фиксируются только как рекомендации в отчётах.
+
+## НУМЕРАЦИЯ
+
+Следующий номер:
+- Glob `openspec/knowledge/**/KB-*.md` (включая `_archive/`).
+- Взять максимальный NNNN, +1.
+- Пустой каталог → `KB-0001`.
+
+Номер **не переиспользуется**, даже если KB удалён с `--force-delete`.
+
+---
+

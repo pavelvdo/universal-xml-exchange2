@@ -1,0 +1,35 @@
+---
+description: "Тонкий диспетчер гейтов: триггеры → подгрузка on-demand правил (architect, verified-cause, precedent, code-truth)"
+alwaysApply: true
+priority: 150
+---
+
+# Gate Dispatcher
+
+## Назначение
+
+Always-apply **только триггеры**. Тела гейтов — on-demand файлы; оркестратор **Read** соответствующий файл при срабатывании.
+
+## Карта on-demand гейтов
+
+| Триггер (кратко) | Файл |
+|------------------|------|
+| Bug fix, hypothesis, Why-Why-Why, UX-значимый фикс | `.cursor/rules/verified-cause-gate.mdc` |
+| Архитектура, перехват, >1 файл, ADR/KB/precedent | `.cursor/rules/architect-gate.mdc` |
+| MODIFIED/REMOVED spec vs archive, Blast Radius | `.cursor/rules/precedent-regression-gate.mdc` |
+| phantom-symbol, post-apply verify, archive | `.cursor/rules/code-truth-gate.mdc` |
+| Delta specs (создание/правка `specs/**` в new/extend; полнота на verify/apply/archive) | `.cursor/rules/openspec-specs-gate.mdc` |
+| Срезы: декомпозиция, slice-gate, defect placement (new/extend/apply/verify/archive) | `.cursor/rules/vertical-slices.mdc` |
+| Правка `.bsl`, Light/Mechanical, HALT-таблица | `.cursor/rules/1c-halt-triggers.mdc` |
+
+## Алгоритм
+
+1. Определить контекст: explore / new / verify / apply / extend / правка BSL.
+2. Пройти триггеры из таблицы; при **любом** совпадении — **Read** файл гейта до действия.
+3. Не дублировать тела гейтов в чат — только результат для заказчика.
+
+## SSOT
+
+- Модели Task → только `model-selection.mdc`
+- Жаргон чата → `.cursor/docs/chat-lexicon.md`
+- Делегирование 1С → `1c-agent-delegation.mdc`

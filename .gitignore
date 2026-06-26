@@ -1,0 +1,32 @@
+# Temp and local
+temp/
+*.log
+.env
+.env.local
+*.local
+
+# OpenSpec / reports (опционально: раскомментируйте, если не хранить отчёты в репо)
+# openspec/changes/*/reports/
+# temp/reports/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Cursor (если не хотите коммитить настройки сессий)
+# .cursor/workspaceStorage/
+
+# 1C / Vanessa (если появятся)
+# *.epf
+# *.erf
+# out/
+
+# Конфигурации 1С (.cf) не храним в Git (особенно под src — тяжёлые ParentConfigurations).
+*.cf
+src/**/*.cf
+/archive1c/
+
+# Выгрузка базовой конфигурации (XML dump) — не храним в Git
+**/cf/
+

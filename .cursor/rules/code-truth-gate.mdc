@@ -1,0 +1,69 @@
+---
+description: "Code-Truth Gate — проверка, что OpenSpec-артефакты после apply ссылаются на реальные символы кода"
+alwaysApply: false
+---
+
+# Code-Truth Gate
+
+## TRIGGER
+
+Проверять при любом переходе:
+
+- `/opsx:apply` → handoff / slice gate / final;
+- `/opsx:verify` в режиме `post-apply`;
+- `/opsx:archive`;
+- `/opsx:extend <name> --code-sync`;
+- ручное упрощение/переписывание кода после уже созданных `design.md`, `tasks.md`, `debug.md`.
+
+Light Mode и Mechanical Mode не блокируются этим правилом, если нет OpenSpec change и нет `debug.md`/`tasks.md`.
+
+## PURPOSE
+
+Артефакты OpenSpec после реализации не должны ссылаться на фантомные процедуры, хелперы, перехваты или имена элементов, которых нет в выгрузке.
+
+## CHECK
+
+1. Определить change dir и прочитать `openspec/project.md` для путей `cf/cfe`.
+2. Извлечь из `design.md`, `tasks.md`, `debug.md`, `specs/**` только технические якоря:
+   - имена в backticks, похожие на процедуры/функции/модули: `pav_*`, `lvv_*`, `<ИмяПроцедуры>`, `<ОбщийМодуль>.<Метод>`;
+   - аннотации расширения: `&Перед(...)`, `&После(...)`, `&Вместо(...)`, `&ИзменениеИКонтроль(...)`;
+   - имена элементов формы вида `Исполнителиpav_*`, если они заявлены как стабильные.
+3. Отфильтровать не-символы:
+   - имена change, ADR/KB/Scenario/Requirement, пути файлов, команды `/opsx:*`;
+   - доменные значения строк и флагов (`"Включить..."`) — проверять только если артефакт утверждает, что это имя процедуры/элемента.
+4. Для каждого технического якоря выполнить `Grep`/`rg` по путям из `openspec/project.md` и явно затронутым файлам change.
+5. Если символ не найден:
+   - `phantom-symbol`: `<symbol>` referenced in `<artifact>` but not found in source paths.
+
+## SEVERITY
+
+- `verify` pre-apply: WARNING (артефакт может быть рецептом, но код ещё не обязан существовать).
+- `verify` mixed/post-apply:
+  - WARNING для незавершённых задач;
+  - CRITICAL для `[x]` задач / принятых срезов.
+- `archive`: hard-block для любых `phantom-symbol` в принятых срезах или завершённых задачах.
+- `apply`: не отмечать задачу `[x]`, если writer сообщил символ, но spot-check его не нашёл.
+
+## REMEDIATION
+
+1. Если код правильный, а артефакты устарели → `/opsx:extend <name> --code-sync`.
+2. Если артефакты правильные, а код не реализован → вернуть задачу в apply/rework.
+3. Если символ намеренно примерный → заменить формулировку на `например ...` и убрать его из acceptance/контракта.
+
+## OUTPUT FORMAT
+
+```markdown
+## Code-Truth Gate
+
+- status: OK | WARNING | CRITICAL
+- checked artifacts: design.md, tasks.md, debug.md, specs/**
+- phantom-symbols:
+  - symbol: <name>
+    artifact: <path>
+    expected scope: <src path>
+    recommendation: /opsx:extend <name> --code-sync | rework implementation
+```
+
+## NOTES
+
+Это механический gate. Он не решает, корректна ли архитектура; он только проверяет, что технические имена в артефактах существуют в коде или явно помечены как примеры.

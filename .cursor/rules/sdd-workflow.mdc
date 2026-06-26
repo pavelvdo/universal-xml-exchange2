@@ -1,0 +1,83 @@
+---
+description: "OpenSpec workflow — explore, plan, apply, verify, archive (vertical slices)"
+alwaysApply: false
+---
+
+# OpenSpec Workflow (единственный рабочий процесс)
+
+## FLOW
+
+```
+explore → new → verify → apply (по срезам) → verify → archive
+                 ↘ extend (user-path) ↗
+verify: internal Repair Loop (repair-класс) — без user-facing extend
+review/explore → extend (user) → verify → apply
+```
+
+**Chat Surface Contract** — §2.6 `.cursor/docs/opsx-output-style.md` (сквозной UX всех `/opsx:*`).
+
+| Этап | Команда | Что происходит | Агенты |
+|------|---------|----------------|--------|
+| **Исследование** | `/opsx:explore` | Карточный бриф B3 (`brief-card.md`) → ≤3 `Task` (trace + explorer) → превью + **Итог / Вердикт / Дальше** в чате → финал bug: блок `## Постановка ЗНИ` **в чате**. Полные отчёты — `temp/reports/`. Опциональный handoff — `temp/explore-handoff-*.md` по словесной просьбе. Профили bug/question. **Knowledge Discovery**. | onec-code-explorer, onec-trace-analyst, onec-code-architect |
+| **Создание / resume change** | `/opsx:new` | proposal → design (вкл. `## Slices`) → specs → tasks (с `# Срез S<N>`). Повторный вызов — дозавершение артефактов. | onec-code-architect (slice decomposition + slice-aware task decomposition) |
+| **Проверка** | `/opsx:verify` | Pre-flight + **internal Repair Loop** (max 2) для repair-класса без чата. Decision → один вопрос A/B, END TURN. Одна команда → **одно** финальное сообщение. `snapshot` без опоры на историю чата. | onec-code-architect, openspec-quality-controller |
+| **Расширение scope** | `/opsx:extend` | **user-extend:** бриф → правки → hint verify. **repair-from-verify:** internal из verify, **без** сообщений в чат. | onec-code-architect, onec-code-explorer |
+| **Реализация** | `/opsx:apply` | **Step-by-slice** (default): один срез — карточка приёмки — следующий срез. Опции: step-by-step / batch | onec-code-writer + onec-code-reviewer |
+| **Архивация** | `/opsx:archive` | При непринятых `S<N>.accept` — slice-gate-подтверждение в скилле: отметить `[x]` и продолжить (**вариант A**), стоп (**B/C**), **`--force-legacy`** (**D**) без контракта срезов; иначе sync specs → archive + **Facts extraction**. | — |
+| **Ревью кода** | `/review` | Ревью по контексту (файл, diff, change); light-review на тривиальном diff. Памятка: `.cursor/docs/review-guide.md` | onec-code-reviewer |
+| **Предрелиз** | `/release-review` | Предрелизный gate: Category 12, Tier 2 explorer, `mode=prerelease`. См. `review-guide.md` | onec-code-reviewer, onec-code-explorer |
+
+Дополнительные действия: `extend` (расширить существующий change), `sync` (дельта-спеки → main), `bulk-archive` (пакетная архивация).
+
+## АЛИАСЫ КОМАНД
+
+| Фраза пользователя | Что выполнять |
+|---------------------|---------------|
+| «создай ЗНИ», «заведи ЗНИ», «новый change» | **СТОП.** Если активна сессия explore — Change Creation Gate (блок `## Постановка ЗНИ` + redirect). Иначе — `/opsx:new` (scaffold + все артефакты с делегированием, slice decomposition и gates). **Запрещено** создавать артефакты change вручную в обход `/opsx:new`. |
+
+## ВЕРТИКАЛЬНЫЕ СРЕЗЫ (модель работы)
+
+ЗНИ режутся на **вертикальные срезы** — приёмопригодные сценарии, каждый с приёмочной задачей `S<N>.accept` и slice-gate. Единый источник истины — `.cursor/rules/vertical-slices.mdc` (legacy-формат `S<N>.T<M>` распознаётся только в мигрированных changes).
+
+- **design.md** содержит секцию `## Slices` с описанием каждого среза (Сценарий, Primary acceptance, Приёмка, Связь со spec, Зависимости).
+- **tasks.md** структурирован по срезам: `# Срез S<N>: ...` → метаданные → задачи `S<N>.<M>` → приёмочный `S<N>.accept` → `<!-- slice-gate: ... -->`.
+- **apply** по умолчанию — step-by-slice: реализовали → пользователь принимает → следующий.
+- **verify** оценивает когерентность срезов (Quality Controller, 6 критериев), а не фазовую структуру.
+- **archive** возможен со всеми `S<N>.accept` = `[x]` (в т.ч. после варианта **A** при архивации → `принят (archive)` в `debug.md`) либо с **`--force-legacy`** (осознанный обход контракта срезов).
+
+## ДОБАВЛЕНИЕ ЗАДАЧ К СУЩЕСТВУЮЩЕМУ CHANGE
+
+| Случай | Действие |
+|--------|----------|
+| Slice mode, дефект в **непринятом** срезе S<N> | Вставить новую задачу `S<N>.<M+1>` **перед** `S<N>.accept` (или legacy `S<N>.T<M>`) |
+| Slice mode, дефект в **принятом** срезе S<K> | Создать **fix-срез** `S<N+1>: Исправление дефекта S<K>` (зависит от S<K>) |
+| Slice mode, новая функциональность | Новый срез `S<N+1>` или расширение существующего непринятого |
+| Новое требование / отчёт ревью / архитектурное замечание в существующем change | `/opsx:extend <name> [--from-review …]` → user-extend (бриф) → hint `/opsx:verify` |
+| Legacy mode (`# Срез` нет) | Вставить в подходящую секцию. Перестройка в срезы — `/opsx:extend <name>` (architect) или ручная правка по этому файлу |
+
+`/opsx:new` — создание **или resume** (дозавершение артефактов). Добавление задач к существующему change — `.cursor/skills/openspec-extend-change/SKILL.md`.
+
+## ПОРОГИ МАСШТАБА ЗНИ
+
+| Порог (задач в tasks.md) | Поведение в workflow |
+|--------------------------|----------------------|
+| **≤ 5 задач** | **Lite tier ЗНИ**: slice decomposition опциональна, срезов может быть 1 (или legacy без срезов). На глубину verify это **не** влияет — облегчённый режим verify включается только флагом `--lite` (guardrails — SKILL verify). |
+| **≥ 6 задач** | **Slice Generation Gate**: design.md обязан содержать `## Slices`. new не разрешает переход к tasks без срезов. Legacy tasks — `/opsx:extend <name>` или ручная правка. |
+
+## ПРИНЦИПЫ
+
+- Архитектура до кода: design.md ревьюируется architect-ом до реализации. Триггеры — `architect-gate.mdc`. Основная точка проверки — `/opsx:verify` (режим `pre-apply`)
+- **Вертикальная декомпозиция**: каждый срез доставляет приёмопригодную ценность; смешение слоёв (UI без логики, инфраструктура без сценария) не допускается
+- Атомарные задачи с критериями приёмки в tasks.md, ID по схеме `S<N>.<M>`
+- Каждый срез заканчивается приёмочной задачей `S<N>.accept` и `<!-- slice-gate: ... -->`
+- BSL — только через агентов (onec-code-writer → onec-code-reviewer)
+- Для точечных правок (2–10 строк, 1 файл) — Light Mode (см. 1c-agent-delegation.mdc); для slice mode оформить как минимальный срез S<N> с одной задачей и приёмочным тестом
+
+## СПРАВОЧНИК ПАТТЕРНОВ
+
+Оценка сложности, шаблоны промптов для агентов, интеграция со скиллами: `.cursor/skills/1c-agent-patterns/SKILL.md`
+
+Vertical slices framework: `.cursor/rules/vertical-slices.mdc`
+
+---
+

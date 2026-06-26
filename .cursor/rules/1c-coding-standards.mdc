@@ -1,0 +1,18 @@
+---
+description: "Thin loader for 1C/BSL coding standards"
+globs: "**/*.bsl"
+priority: 150
+---
+
+# 1C Coding Standards — Loader
+
+The canonical standards live in docs, not in this rule file.
+
+When writing or reviewing BSL, read the relevant references:
+
+1. `.cursor/docs/1c-coding-standards.md`
+2. `.cursor/docs/standard/1c-standards-navigator.md`
+3. The domain file from `.cursor/docs/standard/std-*.md` that matches the touched code
+4. For review only: `.cursor/rules/bsl-antipatterns.mdc` and `.cursor/docs/antipatterns/bsl-antipatterns.md`
+
+Do not duplicate long standards in runtime rules. Keep this file as a glob-triggered redirect only.

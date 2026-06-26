@@ -1,0 +1,94 @@
+---
+description: "Verify: коммуникация с пользователем — тон «архитектор — разработчику», бинарный вердикт, Repair Loop internal"
+alwaysApply: false
+---
+
+# Verify: коммуникация с пользователем
+
+## Принцип
+
+**Тон — «архитектор — разработчику».** Финальное сообщение `/opsx:verify` читается коллегой-разработчиком 1С, который **не открывал** артефакты OpenSpec. Chat Surface Contract — §2.6 `opsx-output-style.md`.
+
+**Verify оценивает постановку, не приёмку.** Тесты, smoke, эталоны ИБ — этап apply/archive.
+
+**Классификация блокеров (детерминированная, из отчёта):**
+
+- **Decision** — продуктовый/архитектурный выбор (A/B, `scope-violation`, Why ↔ plan). В чате — **максимум один** блок. **END TURN.**
+- **Repair** — технические пробелы постановки (orphan scenario, drift, metadata, «Конфигуратор», контракт в design). Verify **чинит сам** через internal Repair Loop — **без** user-facing extend, **без** «Подтвердить?», **0** промежуточных сообщений в чат.
+
+Главный вопрос: «**могу ли я безопасно запустить `/opsx:apply`?**». Первая строка — `.cursor/skills/openspec-verify-change/templates/verdict-card.md`:
+
+- «можно apply»;
+- «до старта нужен ваш выбор»;
+- «не удалось автоматически дописать за 2 итерации» (terminal fail repair).
+
+Слот после первой строки — **один** сигнал ответственности через **`**Следующий шаг:**`**:
+
+| Исход | Следующий шаг в чате |
+|-------|----------------------|
+| GO `pre-apply` | `/opsx:apply <name>` |
+| GO `post-apply` | `/opsx:archive <name>` |
+| Decision (3a, 1b-decision, supersedes) | «ответьте в чате (A или B)»; hint `/opsx:verify` — **после** user-extend (см. ниже) |
+| Terminal fail repair | «опишите в чате, как поступить» **или** `/opsx:extend <name>` |
+
+Для GO **не** использовать формулировки «ничего не требуется» / «Что нужно от вас: ничего» без явной user-action команды.
+
+## Output style
+
+- **Файл** — `.cursor/skills/openspec-verify-change/templates/executive-summary.md` (полная память).
+- **Чат** — `.cursor/skills/openspec-verify-change/templates/chat-summary.md` + `verdict-card.md` (тот же каталог).
+- **Запрещено в чате** — §7 `chat-output-budget.mdc` + §2.6 `opsx-output-style.md` (internal-команды, перечни файлов, explore-бриф на repair).
+
+## Правила
+
+1. **Бинарный вердикт обязателен** в первой строке финального сообщения (после Repair Loop, если был).
+
+2. **Repair Loop (max 2 attempts):**
+   - Decision → 3a-decision, END TURN.
+   - Repair only → `apply_repairs_from_report()` internal (repair-from-verify), re-verify, **без чата**.
+   - Decision на attempt 2 → 3a-decision, **не** terminal fail.
+   - Repair после attempt 2 → вариант 4 `chat-summary.md`.
+   - GO → вариант 2.
+
+3. **При NO-GO decision в чате:**
+   - Триада: **В чём проблема / На что влияет / A·B**.
+   - Технические repair-пункты **не** перечислять пунктами.
+   - **Запрет смешения:** развилка + список «дополнительно дописать» — fail.
+
+4. **При NO-GO repair:** пользователь **ничего не видит** до финала (GO, decision, или terminal fail).
+
+5. **silent_ok:** только snapshot + mtime + последний отчёт — **не** prior turns чата. 1a / 1b-decision / 1b-repair (internal loop).
+
+6. **Промежуточные карточки Task** — игнорируются (`chat-output-budget.mdc` §5a).
+
+7. **Без мета-абзацев** про «режим verify», «шаблон», «формат вывода».
+
+## Pre-send self-check
+
+1. Одно финальное сообщение на `/opsx:verify`?
+2. Нет internal-команд (`/opsx:extend --from-verify`, «Запускаю extend»)?
+3. Один сигнал ответственности = слот **`**Следующий шаг:**`**?
+4. Можно ответить/действовать без открытия файла (кроме terminal fail)?
+5. HALT §7 пройден?
+6. Handoff на языке эффекта, не лог файлов?
+7. **Изолированный чат:** ответ не ссылается на «как в прошлой сессии» / «вы уже подтвердили»?
+8. **Agent-keys HALT:** нет `D0`–`Dn`, `closed_decisions`, `decision_round`, `decision_id`, `verify_depth`, `GO-with-assumptions`, `reopen-blocked`, `supersedes`, `CHALLENGE-saturated`, `SKIPPED-lite` в чате?
+9. **Decision context:** при `decision_round >= 1` есть блок «Уже зафиксировано» прозой (без ID)?
+10. **GO next step:** pre-apply содержит `/opsx:apply`? post-apply — `/opsx:archive`?
+
+## После решения пользователя (decision)
+
+1. Парсинг свободного текста; при неоднозначности — **один** уточняющий вопрос.
+
+2. **Две строки в чат** (без отдельного «Понял» — перефраз выбора и есть подтверждение, см. §4 `chat-output-budget.mdc`):
+   ```
+   Выбор: <пересказ решения одним предложением на языке кода 1С, без D0/decision_id>.
+   Зафиксирую в постановке. Следующий шаг: `/opsx:verify <name>`.
+   ```
+   **Без** `/opsx:extend --from-verify …` в чате.
+
+3. Internal: user-extend `--from-verify` → **сразу** обновить `debug.md` § Verify decision ledger + design § «Решения verify (зафиксировано)» + закрыть темы в `open_known_questions`; lite confirm допустим после decision.
+
+## После remediation
+
+Повторный `/opsx:verify` — новый бинарный вердикт без напоминаний об ушедших развилках. `silent_ok` — по snapshot, не по истории чата.

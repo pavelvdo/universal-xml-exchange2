@@ -1,0 +1,25 @@
+{
+    "$schema": "https://1c-syntax.github.io/bsl-language-server/configuration/schema.json",
+    "language": "ru",
+    "configurationRoot": "src/ЭДО ПАО",
+    "diagnostics": {
+        "computeTrigger": "onSave",
+        "skipSupport": "withSupportLocked",
+        "analyzeOnStart": false,
+        "mode": "ON",
+        "minimumLSPDiagnosticLevel": "Warning"
+    },
+    "codeLens": {
+        "parameters": {
+            "cognitiveComplexity": false,
+            "cyclomaticComplexity": false
+        }
+    },
+    "inlayHint": {
+        "parameters": {
+            "cognitiveComplexity": false,
+            "cyclomaticComplexity": false,
+            "sourceDefinedMethodCall": false
+        }
+    }
+}

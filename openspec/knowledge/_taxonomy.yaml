@@ -1,0 +1,35 @@
+version: 1
+updated-at: "2026-06-17T00:00:00Z"
+
+domains:
+  - id: ZUP_cf
+    title: "Зарплата и управление персоналом КОРП 3.1"
+    source: src/ЗУП/cf
+    owner: vendor
+    subdomains:
+      - approval
+      - tasks
+      - common
+      - ui
+      - exchange
+
+  - id: rg_UniversalnyjObmenXML
+    title: "рг_УниверсальныйОбменXML"
+    source: src/ЗУП/cfe/рг_УниверсальныйОбменXML
+    owner: project
+    subdomains:
+      - exchange-settings
+      - webservice
+      - exchange-engine
+      - scheduled-jobs
+
+cross:
+  scope-rules:
+    - >
+      Факты с anchor в домене ZUP_cf описывают типовое поведение,
+      владелец — вендор. Перехваты и расширение этого поведения
+      описываются в доменах расширений и связываются через related.kb.
+    - >
+      Факт размещается в домене по anchor.path (где живёт код),
+      а не по тому, кто его вызывает.
+  fallback-domain: rg_UniversalnyjObmenXML

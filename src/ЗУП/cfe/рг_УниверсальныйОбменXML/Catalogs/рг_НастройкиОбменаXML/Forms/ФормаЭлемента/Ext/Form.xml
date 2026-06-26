@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcssch="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.20">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="ФормаКоманднаяПанель" id="-1">
+		<ChildItems>
+			<Button name="ФормаРасписаниеРегламентногоОбмена" id="47">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.РасписаниеРегламентногоОбмена</CommandName>
+				<ExtendedTooltip name="ФормаРасписаниеРегламентногоОбменаРасширеннаяПодсказка" id="48"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">ПриСозданииНаСервере</Event>
+		<Event name="BeforeWriteAtServer">ПередЗаписьюНаСервере</Event>
+		<Event name="OnWriteAtServer">ПриЗаписиНаСервере</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="Код" id="1">
+			<DataPath>Объект.Code</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+			<ContextMenu name="КодКонтекстноеМеню" id="2"/>
+			<ExtendedTooltip name="КодРасширеннаяПодсказка" id="3"/>
+		</InputField>
+		<InputField name="Наименование" id="4">
+			<DataPath>Объект.Description</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+			<ContextMenu name="НаименованиеКонтекстноеМеню" id="5"/>
+			<ExtendedTooltip name="НаименованиеРасширеннаяПодсказка" id="6"/>
+		</InputField>
+		<CheckBoxField name="Источник" id="57">
+			<DataPath>Объект.Источник</DataPath>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="ИсточникКонтекстноеМеню" id="58"/>
+			<ExtendedTooltip name="ИсточникРасширеннаяПодсказка" id="59"/>
+			<Events>
+				<Event name="OnChange">ИсточникПриИзменении</Event>
+			</Events>
+		</CheckBoxField>
+		<CheckBoxField name="ИспользоватьРасписание" id="16">
+			<DataPath>Объект.ИспользоватьРасписание</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="ИспользоватьРасписаниеКонтекстноеМеню" id="17"/>
+			<ExtendedTooltip name="ИспользоватьРасписаниеРасширеннаяПодсказка" id="18"/>
+		</CheckBoxField>
+		<InputField name="АдресСервиса" id="7">
+			<DataPath>Объект.АдресСервиса</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+			<ContextMenu name="АдресСервисаКонтекстноеМеню" id="8"/>
+			<ExtendedTooltip name="АдресСервисаРасширеннаяПодсказка" id="9"/>
+		</InputField>
+		<InputField name="Логин" id="10">
+			<DataPath>Объект.Логин</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+			<ContextMenu name="ЛогинКонтекстноеМеню" id="11"/>
+			<ExtendedTooltip name="ЛогинРасширеннаяПодсказка" id="12"/>
+		</InputField>
+		<InputField name="Пароль" id="44">
+			<DataPath>Пароль</DataPath>
+			<PasswordMode>true</PasswordMode>
+			<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+			<ContextMenu name="ПарольКонтекстноеМеню" id="45"/>
+			<ExtendedTooltip name="ПарольРасширеннаяПодсказка" id="46"/>
+			<Events>
+				<Event name="OnChange">ПарольПриИзменении</Event>
+			</Events>
+		</InputField>
+		<LabelField name="ИндентификаторРегламентногоЗадания" id="19">
+			<DataPath>Объект.ИндентификаторРегламентногоЗадания</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="ИндентификаторРегламентногоЗаданияКонтекстноеМеню" id="20"/>
+			<ExtendedTooltip name="ИндентификаторРегламентногоЗаданияРасширеннаяПодсказка" id="21"/>
+		</LabelField>
+		<UsualGroup name="ГруппаИсточник" id="49">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Группа источник</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Группа источник</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="ГруппаИсточникРасширеннаяПодсказка" id="50"/>
+			<ChildItems>
+				<InputField name="Префикс" id="51">
+					<DataPath>Объект.Префикс</DataPath>
+					<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+					<ContextMenu name="ПрефиксКонтекстноеМеню" id="52"/>
+					<ExtendedTooltip name="ПрефиксРасширеннаяПодсказка" id="53"/>
+				</InputField>
+				<InputField name="ПрефиксБазыПриемника" id="54">
+					<DataPath>Объект.ПрефиксБазыПриемника</DataPath>
+					<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+					<ContextMenu name="ПрефиксБазыПриемникаКонтекстноеМеню" id="55"/>
+					<ExtendedTooltip name="ПрефиксБазыПриемникаРасширеннаяПодсказка" id="56"/>
+				</InputField>
+				<InputField name="Статус" id="60">
+					<DataPath>Объект.Статус</DataPath>
+					<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+					<ContextMenu name="СтатусКонтекстноеМеню" id="61"/>
+					<ExtendedTooltip name="СтатусРасширеннаяПодсказка" id="62"/>
+				</InputField>
+				<Button name="ЗагрузитьПравилаИзФайла" id="71">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.ЗагрузитьПравилаИзФайла</CommandName>
+					<ExtendedTooltip name="ЗагрузитьПравилаИзФайлаРасширеннаяПодсказка" id="72"/>
+				</Button>
+				<LabelField name="ПравилаЗагружены" id="73">
+					<DataPath>ПравилаЗагружены</DataPath>
+					<ContextMenu name="ПравилаЗагруженыКонтекстноеМеню" id="74"/>
+					<ExtendedTooltip name="ПравилаЗагруженыРасширеннаяПодсказка" id="75"/>
+				</LabelField>
+				<Table name="Параметры" id="22">
+					<Representation>List</Representation>
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>Объект.Параметры</DataPath>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="ПараметрыКонтекстноеМеню" id="23"/>
+					<AutoCommandBar name="ПараметрыКоманднаяПанель" id="24"/>
+					<ExtendedTooltip name="ПараметрыРасширеннаяПодсказка" id="25"/>
+					<SearchStringAddition name="ПараметрыСтрокаПоиска" id="26">
+						<AdditionSource>
+							<Item>Параметры</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ПараметрыСтрокаПоискаКонтекстноеМеню" id="27"/>
+						<ExtendedTooltip name="ПараметрыСтрокаПоискаРасширеннаяПодсказка" id="28"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="ПараметрыСостояниеПросмотра" id="29">
+						<AdditionSource>
+							<Item>Параметры</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ПараметрыСостояниеПросмотраКонтекстноеМеню" id="30"/>
+						<ExtendedTooltip name="ПараметрыСостояниеПросмотраРасширеннаяПодсказка" id="31"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="ПараметрыУправлениеПоиском" id="32">
+						<AdditionSource>
+							<Item>Параметры</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="ПараметрыУправлениеПоискомКонтекстноеМеню" id="33"/>
+						<ExtendedTooltip name="ПараметрыУправлениеПоискомРасширеннаяПодсказка" id="34"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<LabelField name="ПараметрыНомерСтроки" id="35">
+							<DataPath>Объект.Параметры.LineNumber</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="ПараметрыНомерСтрокиКонтекстноеМеню" id="36"/>
+							<ExtendedTooltip name="ПараметрыНомерСтрокиРасширеннаяПодсказка" id="37"/>
+						</LabelField>
+						<InputField name="ПараметрыИмяПараметра" id="38">
+							<DataPath>Объект.Параметры.ИмяПараметра</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+							<ContextMenu name="ПараметрыИмяПараметраКонтекстноеМеню" id="39"/>
+							<ExtendedTooltip name="ПараметрыИмяПараметраРасширеннаяПодсказка" id="40"/>
+						</InputField>
+						<InputField name="ПараметрыЗначениеПараметра" id="41">
+							<DataPath>Объект.Параметры.ЗначениеПараметра</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+							<ContextMenu name="ПараметрыЗначениеПараметраКонтекстноеМеню" id="42"/>
+							<ExtendedTooltip name="ПараметрыЗначениеПараметраРасширеннаяПодсказка" id="43"/>
+						</InputField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="ГруппаПриемник" id="63">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Группа приемник</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Группа приемник</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="ГруппаПриемникРасширеннаяПодсказка" id="64"/>
+			<ChildItems>
+				<InputField name="Префикс1" id="65">
+					<DataPath>Объект.ПрефиксБазыПриемника</DataPath>
+					<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+					<ContextMenu name="Префикс1КонтекстноеМеню" id="66"/>
+					<ExtendedTooltip name="Префикс1РасширеннаяПодсказка" id="67"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Объект" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.рг_НастройкиОбменаXML</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="Пароль" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Пароль</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ПарольИзменен" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Пароль изменен</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Расписание" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Расписание</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
+		</Attribute>
+		<Attribute name="ПравилаОбменаДанными" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Правила обмена данными</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
+		</Attribute>
+		<Attribute name="ПравилаЗагружены" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Правила загружены</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="РасписаниеРегламентногоОбмена" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Расписание регламентного обмена</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Расписание регламентного обмена</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>РасписаниеРегламентногоОбмена</Action>
+		</Command>
+		<Command name="ЗагрузитьПравилаИзФайла" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Загрузить правила из файла…</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Загрузить правила из файла</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ЗагрузитьПравилаИзФайла</Action>
+		</Command>
+	</Commands>
+</Form>

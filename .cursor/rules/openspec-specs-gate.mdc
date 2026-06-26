@@ -1,0 +1,79 @@
+---
+description: "Проверка полноты delta specs на этапах apply/verify/archive"
+alwaysApply: false
+---
+
+# OpenSpec: Delta Specs Completeness Gate
+
+## ПРИНЦИП
+
+Артефакт specs — обязательная часть spec-driven workflow. Без delta specs спецификации продукта не обновляются при архивации change, и требования теряются. Агент обязан проверять наличие specs и предупреждать/предлагать создание на каждом ключевом этапе.
+
+## ТРИГГЕР
+
+Работа с change в схеме, содержащей артефакт specs (проверить через Glob по `openspec/changes/<name>/specs/**/*.md`).
+
+## ПРОВЕРКА
+
+Glob по `openspec/changes/<name>/specs/**/*.md`. Если 0 файлов и артефакт specs не в статусе done — specs отсутствуют.
+
+## ДЕЙСТВИЯ ПО ЭТАПАМ
+
+### explore (при наличии активного change)
+
+- В конце сессии explore, если обсуждались требования/возможности: предложить «Зафиксировать требования в delta spec?»
+- Не блокировать. При отказе — продолжить без specs.
+
+### apply (перед началом реализации задач)
+
+- Перед первой задачей: проверить specs.
+- Если отсутствуют: WARNING пользователю с предложением создать.
+- При согласии: создать specs из proposal (Capabilities) + design.
+- При отказе: продолжить apply.
+
+### verify
+
+- В секции Completeness: если specs не done — добавить issue CRITICAL: «Артефакт specs не создан. Рекомендация: создать перед архивацией.»
+
+### archive
+
+- Если specs не done: предупреждение (как для незавершённых задач).
+- Предложить создать сейчас. При отказе — архивировать с warning.
+
+## СОЗДАНИЕ SPECS
+
+Источники: proposal.md (секция Capabilities / What Changes), design.md. Формат: `openspec/changes/<name>/specs/<capability>/spec.md` с секциями ADDED/MODIFIED + сценарии WHEN/THEN. Если capability не определена — использовать имя change как capability.
+
+## НАБЛЮДАЕМОСТЬ СЦЕНАРИЕВ (Scenario Observability)
+
+**Триггер:** verify Layer 3, ff/new при генерации specs, QC при cross-check spec ↔ tasks.
+
+**Правило:** клаузы `THEN` (и при необходимости `WHEN`) в `#### Scenario:` SHALL описывать **наблюдаемое** поведение для пользователя/приёмки в ИБ, а не детали реализации.
+
+**Алгоритм (Grep по `openspec/changes/<name>/specs/**/spec.md`):**
+
+Для каждого `#### Scenario:` проверить строки `- **THEN**` на **маркеры implementation-leak** (регистронезависимо, подстрока):
+
+- `функция возвращает`, `метод возвращает`, `процедура возвращает`
+- `метод вызывает`, `процедура добавляет`, `модуль экспортирует`
+- `возвращает структуру`, `вставляет ключ`, `добавляет экспортную`
+- `shall определять` + имя процедуры/функции в backticks как единственный результат
+
+**Алерт:** `scenario-implementation-leak` — **WARNING** (verify Layer 3; не блокирует archive). На этапе **ff/new Slice Generation Gate** — **WARNING с обязательной remediation** (блокирует «Принять» предложенные срезы до исправления spec или явного override пользователя).
+
+**Requirement только с implementation-leak:** если все Scenario Requirement описывают контракт API/кода (implementation-leak), **не создавать отдельный Requirement** в spec. Перенести детали в `design.md` → `## Behavior Contract`; в spec оставить UX-Requirement с наблюдаемыми Scenario. Implementation Scenario покрываются verification-задачей `S<N>.<M>` или буллетом primary `S<N>.accept`, **не** отдельным срезом с gate.
+
+**Ремедиация:**
+
+1. Переписать `THEN` как наблюдаемый результат («проверка УНЭП проходит без ложного „недействительно“», «одно чтение вложения на трассировке»).
+2. Детали реализации (имена функций, ключи структур) — в `design.md` (`## Behavior Contract`, `## Implementation Options`), не в spec Scenario.
+
+**Связь с vertical slices:** implementation-level Requirement/Scenario часто порождает foundation-slice с gate (QC `slice-not-vertical`, `slice-foundation-with-gate`). Не маппить 1:1 Requirement → Slice.
+
+## ИСКЛЮЧЕНИЯ
+
+- Пользователь явно сказал «без спеки» / «skip specs».
+- Change не содержит артефакт specs в схеме (не spec-driven).
+
+---
+
