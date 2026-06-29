@@ -71,7 +71,6 @@
 			<WebService>rgExchangeService</WebService>
 			<ScheduledJob>рг_ВыполнениеОбменаXML</ScheduledJob>
 			<Catalog>рг_НастройкиОбменаXML</Catalog>
-			<Enum>рг_СтатусыОбмена</Enum>
 			<DataProcessor>рг_УниверсальныйОбменДаннымиXML</DataProcessor>
 		</ChildObjects>
 	</Configuration>

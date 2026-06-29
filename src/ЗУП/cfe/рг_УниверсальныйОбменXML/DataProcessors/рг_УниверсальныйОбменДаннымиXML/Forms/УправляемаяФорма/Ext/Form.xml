@@ -9,17 +9,20 @@
 		<ChildItems>
 			<Button name="ФормаВосстановить" id="185">
 				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
 				<CommandName>Form.StandardCommand.RestoreValues</CommandName>
 				<LocationInCommandBar>InCommandBarAndInAdditionalSubmenu</LocationInCommandBar>
 				<ExtendedTooltip name="ФормаВосстановитьExtendedTooltip" id="233"/>
 			</Button>
 			<Button name="ФормаСохранить" id="184">
 				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
 				<CommandName>Form.StandardCommand.SaveValues</CommandName>
 				<LocationInCommandBar>InCommandBarAndInAdditionalSubmenu</LocationInCommandBar>
 				<ExtendedTooltip name="ФормаСохранитьExtendedTooltip" id="234"/>
 			</Button>
 			<Popup name="РежимОбработки" id="197">
+				<Visible>false</Visible>
 				<Title>
 					<v8:item>
 						<v8:lang>ru</v8:lang>
@@ -42,6 +45,7 @@
 			</Popup>
 			<Button name="ФормаСправка" id="183">
 				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
 				<CommandName>Form.StandardCommand.Help</CommandName>
 				<LocationInCommandBar>InCommandBarAndInAdditionalSubmenu</LocationInCommandBar>
 				<ExtendedTooltip name="ФормаСправкаExtendedTooltip" id="238"/>
@@ -65,6 +69,7 @@
 			<ExtendedTooltip name="ФормаВыполнитьОбменРасширеннаяПодсказка" id="411"/>
 		</Button>
 		<Pages name="ГлавнаяПанельФормы" id="1">
+			<Visible>false</Visible>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>

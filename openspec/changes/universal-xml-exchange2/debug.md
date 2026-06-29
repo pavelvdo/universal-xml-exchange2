@@ -195,3 +195,130 @@
 Обоснование: все рабочие задачи S3 [x] включая S3.7 UX WS; приёмка передана на ручной Primary.
 Изменения tasks: S3.7 [x]
 Связанный отчёт: reports/handoff-acceptance-S3-2026-06-26-2.md
+
+## Extend — 2026-06-29
+
+**Источник:** `/opsx:explore` + блок `## Постановка ЗНИ` в чате; `temp/reports/exploration-2026-06-29-universal-xml-exchange-status-ux.md`; `temp/reports/architecture-2026-06-29-universal-xml-exchange-status-valuelist.md`.
+
+**Решение пользователя:** вариант 1 — срез S4 «UX статуса источника» (удаление enum, строковый `Статус`, список значений на форме, кнопки «Подготовить к обмену» / «Отменить обмен»; диалог подтверждения при отмене из «Выполняется»).
+
+**Disposition:** accepted.
+
+**Drift-check:** drift-warning (Behavior Contract: UX инициации и тип хранения статуса; Non-Goals не затронуты; Why усилен — упрощение UX без смены двухфазной модели).
+
+**Architect Gate:** scope-coherence-audit — отчёт `reports/architecture-extend-coherence-2026-06-29.md`, вердикт coherent.
+
+**Изменено:**
+- `proposal.md` — тип `Статус`, удаление enum, кнопка вместо ручного «Новое»
+- `design.md` — D1 (строковые коды), D7 (кнопки), Behavior Contract, Manual Configuration, Blast Radius, Slices S4, Migration S4
+- `specs/exchange-settings/spec.md` — MODIFIED «Статус жизненного цикла обмена»
+- `tasks.md` — срез S4 (S4.1–S4.8, S4.accept)
+
+**Следующий шаг:** `/opsx:verify universal-xml-exchange2`, затем `/opsx:apply` для S4.
+
+### Slice S3 — принят (2026-06-29)
+Срез: S3 — Ошибки и журнал регистрации
+Решение: принят
+Обоснование: без замечаний (пользователь)
+Изменения tasks: S3.accept [x]
+Связанный отчёт: reports/slice-acceptance-S3-2026-06-29.md
+
+### Code-Truth — S4.3–S4.4 — 2026-06-29
+- task: S4.3–S4.4
+- symbols:
+  - СтатусНеГотов, СтатусНовое, СтатусВыполняется, СтатусВыполнено, СтатусОшибка @ Module.bsl:355-451, annotation=none, action=created
+  - ПредставлениеСтатуса @ Module.bsl:471-507, annotation=none, action=created
+  - ЗаполнитьСписокСтатусов @ Module.bsl:521-539, annotation=none, action=created
+  - КодСтатусаПрофиля @ Module.bsl:881-897, annotation=none, action=created
+  - ЗначениеСтатусаПоКоду @ Module.bsl:917-951, annotation=none, action=created
+  - ПолучитьДанныеОбмена, ПодтвердитьПолучениеДанных, НачатьВыгрузкуGetData, УстановитьСтатусПрофиляИсточника @ Module.bsl, annotation=none, action=modified
+- verification: grep OK (0 Перечисления.рг_СтатусыОбмена)
+- source: writer.created_or_modified_symbols
+
+### Code-Truth — S4.1 post + S4.8 — 2026-06-29
+- task: S4.1-bridge, S4.8
+- symbols:
+  - КодСтатусаПрофиля, ЗначениеСтатусаПоКоду @ Module.bsl, annotation=none, action=modified
+  - ПодтвердитьПолучениеДанных, НачатьВыгрузкуGetData, УстановитьСтатусПрофиляИсточника @ Module.bsl, annotation=none, action=modified
+  - ПередЗаписью @ ObjectModule.bsl:72-95, annotation=none, action=modified
+- verification: grep OK (0 enum refs in BSL); guard D7 read OK
+- source: writer.created_or_modified_symbols
+
+### Code-Truth — S4.6–S4.7 — 2026-06-29
+- task: S4.6–S4.7
+- symbols:
+  - ПриСозданииНаСервере @ Form/Module.bsl:16-18, annotation=none, action=modified
+  - ПодготовитьКОбмену, ОтменитьОбмен, ОтменитьОбменПослеПодтверждения @ Form/Module.bsl:360-404, annotation=none, action=modified/created
+  - ПодготовитьКОбменуНаСервере, ОтменитьОбменНаСервере, ЗаписатьОбъектФормы, ОбновитьОтображениеСтатусаИКоманд @ Form/Module.bsl:423-533, annotation=none, action=created/modified
+- verification: grep/read OK
+- source: writer.created_or_modified_symbols
+
+### Slice S4 — передача на приёмку (2026-06-29)
+Срез: S4 — UX статуса источника
+Решение: awaiting-acceptance
+Обоснование: все рабочие задачи S4 [x]; приёмочная задача передана на ручной Primary.
+Изменения tasks: S4.1–S4.8 [x]
+Связанный отчёт: reports/handoff-acceptance-S4-2026-06-29.md
+
+## Extend Coherence Audit — 2026-06-29
+
+- Триггер: semantic (drift-warning из брифа extend)
+- Drift-check из брифа: drift-warning
+- Вердикт архитектора: coherent
+- Отчёт: `reports/architecture-extend-coherence-2026-06-29.md`
+- Решение пользователя: accepted recommendations — срез S4, вариант 1
+
+### Verify repair — S4 status UX (2026-06-29)
+
+**Источник:** `/opsx:verify` + design-challenge gaps A/B/C, QC/readiness warnings.
+
+**Disposition:** repaired — единый spec статуса; D7 guard + порядок Migration S4; tasks S4 порядок/зависимости/пути.
+
+**Связанный отчёт:** `reports/verification-2026-06-29.md`
+
+### Verify repair — WS error unreadable (2026-06-29)
+
+**Источник:** `/opsx:verify` + симптом на приёмнике (SOAP + «????», стек 1935).
+
+**Disposition:** repaired — срез S5, design § UX, spec scenario, tasks S5.1–S5.2.
+
+**Связанный отчёт:** `reports/verification-2026-06-29-2.md`
+
+### Code-Truth — S5.1–S5.2 — 2026-06-29
+- task: S5.1–S5.2
+- symbols:
+  - ВызватьИсключениеПриОшибкеДвижкаОбмена @ Module.bsl:2373-2395, annotation=none, action=modified
+  - ТекстОшибкиВебСервисаДляПользователя @ Module.bsl:1209-1303, annotation=none, action=modified
+  - НормализоватьСтрокуКандидатаОшибкиВебСервиса @ Module.bsl:1057-1117, annotation=none, action=modified
+- verification: grep/read OK; `ВызватьИсключение Заголовок`; цикл обёрток `Пока СтрокаСлужебнаяОбёртка…`
+- source: writer.created_or_modified_symbols
+
+### Slice S5 — передача на приёмку (2026-06-29)
+Срез: S5 — Читаемость ошибок WS на приёмнике
+Решение: awaiting-acceptance
+Обоснование: S5.1–S5.2 реализованы; повторить сценарий со скриншота (ошибка правил на источнике).
+Изменения tasks: S5.1–S5.2 [x]
+Связанный отчёт: reports/handoff-acceptance-S5-2026-06-29.md
+
+### Verify repair — journal encoding source (2026-06-29)
+
+**Источник:** `/opsx:verify` + «????» в журнале источника после заголовка ошибки правил.
+
+**Disposition:** repaired — задача S5.3, уточнение design/tasks/S5.accept.
+
+**Связанный отчёт:** `reports/verification-2026-06-29-3.md`
+
+### Code-Truth — S5.3 — 2026-06-29
+- task: S5.3
+- symbols:
+  - НастроитьПротоколДвижкаОбмена @ Module.bsl:2347-2351, annotation=none, action=modified
+  - КодировкаПротоколаДвижкаОбмена @ Module.bsl:2582-2640, annotation=none, action=modified
+- verification: grep/read OK; UTF8 before `ИнициализироватьВедениеПротоколаОбмена`; read default ANSI aligned with ObjectModule:3096
+- source: writer.created_or_modified_symbols
+
+### Slice S5 — передача на приёмку (2026-06-29, S5.3)
+Срез: S5 — Читаемость ошибок WS на приёмнике
+Решение: awaiting-acceptance
+Обоснование: S5.1–S5.3 реализованы; повторить сценарий ошибки правил — приёмник + журнал источника.
+Изменения tasks: S5.3 [x]
+Связанный отчёт: reports/handoff-acceptance-S5-2026-06-29.md
